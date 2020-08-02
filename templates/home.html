@@ -1,0 +1,11 @@
+{% extends "template.html" %} {% block conteudo %}
+<form action="{{ url_for('start') }}">
+  <h4>What method do you want to use?</h4>
+  <button name="method" value="1" type="submit" class="btn btn-primary btn-lg">
+    Thor I
+  </button>
+  <button name="method" value="2" type="submit" class="btn btn-primary btn-lg">
+    Thor II
+  </button>
+</form>
+{% endblock %}

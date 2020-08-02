@@ -1,0 +1,35 @@
+from flask import render_template, request, redirect, flash, url_for, send_from_directory
+from app import app
+from models.thor import *
+from utils import Utils
+
+thor = Thor()
+
+@app.route('/start')
+def start():
+    thor.selected_method = int(request.args.get('method'))
+    len(thor.alternatives)
+    return render_template('main.html', title='Main Parameters',
+                            alternative=len(thor.alternatives),
+                            criteria=len(thor.criterias),
+                            decisor=len(thor.decisors))
+
+
+@app.route('/main',  methods=['GET', 'POST',])
+def main():
+    thor.alternatives = [None] * int(request.form['alternative'])
+    thor.decisors = [None] * int(request.form['decisor'])
+    thor.criterias = [None] * int(request.form['criteria'])
+    return render_template('info_names.html', title='Alternatives and Criterias name',
+                            alternatives=thor.alternatives,
+                            criterias=thor.criterias)
+
+
+@app.route('/assignment',  methods=['POST'])
+def assignment():
+    thor.alternatives = [request.form[f'alternative{i}'] for i in range(1, len(thor.alternatives) + 1)]
+    thor.criterias = [request.form[f'criteria{i}'] for i in range(1, len(thor.criterias) + 1)]
+    # creating the matrices
+    thor.matrices = [Utils.create_initial_matrix(len(thor.alternatives)) for i in range(3)]
+    thor.weights = [Utils.create_initial_weight(len(thor.criterias)) for i in range(3)]
+    return render_template('assignment.html', title='Assignment method')

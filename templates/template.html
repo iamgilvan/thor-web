@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thor Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}"/>
+    <style>
+      .box {
+        align="center";
+        width: 300px;
+        height: 100px;
+        padding: 150px;
+        border: "0.5px solid";
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <ul id="messages" class="list-unstyled">
+          {% for message in messages %}
+          <li class="alert alert-success">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+        <div class="page-header">
+          <h1>{{ title }}</h1>
+        </div>
+          {% block conteudo %}{% endblock %}
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    </div>
+  </body>
+</html>

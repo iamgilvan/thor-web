@@ -1,0 +1,14 @@
+{% extends "template.html" %} {% block conteudo %}
+<form>
+  <h4>What assignment method do you want to use?</h4>
+  <button name="assignment" value="direct" type="submit" class="btn btn-info btn-lg">
+    Direct Assignment
+  </button>
+  <button name="assignment" value="reason" type="submit" class="btn btn-info btn-lg">
+    Reason Scale
+  </button>
+  <button name="assignment" value="interval" type="submit" class="btn btn-info btn-lg">
+    Interval Scale
+  </button>
+</form>
+{% endblock %}

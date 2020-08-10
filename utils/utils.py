@@ -5,14 +5,14 @@ class Utils:
     def create_initial_matrix(alternatives_number: int):
         matrix = []
         for alt in range(alternatives_number):
-            line = [ 0 for column in range(alternatives_number)]
+            line = [0 for column in range(alternatives_number)]
             matrix.append(line)
         return matrix
 
 
     @staticmethod
     def create_initial_weight(criteria_number: int):
-        return [ 0 for i in range(criteria_number)]
+        return [0 for i in range(criteria_number)]
 
 
     @staticmethod
@@ -31,7 +31,7 @@ class Utils:
 
 
     @staticmethod
-    def first_disagreement(self,a,b,c, thor):
+    def first_disagreement(self,a,b,c,thor):
         control, partial_sum, total_sum = 0
         for i in range(thor.criteria):
             if not thor.weights[0][i]==0:

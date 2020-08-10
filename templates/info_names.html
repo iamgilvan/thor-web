@@ -6,18 +6,18 @@
         <hr>
         <h6><b>Alternatives name</b></h6>
         {% for i in alternatives %}
-        <div class="form-group">
-            <label for="alternative{{ loop.index }}">Alternative {{ loop.index }}:</label>
-            <input type="text" name="alternative{{loop.index}}" class="form-control mx-sm-3" required>
-        </div>
+            <div class="form-group">
+                <label for="alternative{{ loop.index }}">Alternative {{ loop.index }}:</label>
+                <input type="text" name="alternative{{loop.index}}" class="form-control mx-sm-3" required>
+            </div>
         {% endfor %}
         <hr>
         <h6><b>Criterias name</b></h6>
         {% for i in criterias %}
-        <div class="form-group">
-            <label for="criteria{{loop.index}}">Criteria {{ loop.index }}:</label>
-            <input type="text" name="criteria{{loop.index}}" class="form-control mx-sm-3" required>
-        </div>
+            <div class="form-group">
+                <label for="criteria{{loop.index}}">Criteria {{ loop.index }}:</label>
+                <input type="text" name="criteria{{loop.index}}" class="form-control mx-sm-3" required>
+            </div>
         {% endfor %}
     </div>
     <button class="btn btn-primary" type="submit">Submit</button>

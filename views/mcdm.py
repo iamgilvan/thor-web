@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, flash, url_for, send_from_directory
 from app import app
 from models.thor import *
-from utils import Utils
+from utils.utils import *
 
 thor = Thor()
 
@@ -33,3 +33,13 @@ def assignment():
     thor.matrices = [Utils.create_initial_matrix(len(thor.alternatives)) for i in range(3)]
     thor.weights = [Utils.create_initial_weight(len(thor.criterias)) for i in range(3)]
     return render_template('assignment.html', title='Assignment method')
+
+@app.route('/weight', methods=['POST'])
+def weight():
+    thor.assignment_method_selected = request.form['assignment']
+    # if thor.assignment_method_selected == 'direct':
+    
+    # elif thor.assignment_method_selected == 'reason':
+        
+    # else: # selected method was interval
+    return render_template('weight.html', title='Weight', data=thor)

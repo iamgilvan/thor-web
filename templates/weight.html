@@ -1,0 +1,24 @@
+{% extends "template.html" %} {% block conteudo %}
+<form>
+    <h6><b>Decision makers weights</b></h6>
+    {% for decisor in data.decisors %}
+    <label for="decisors{{ data.decisors[loop.index]}}">Decisor {{ loop.index }}:</label>
+        {% set first_index = loop.index %}
+        <div class="form-row">
+            <div class="form-inline">
+                {% if 'direct' in data.assignment_method_selected %}
+                    {% for criteria in data.criterias %}
+                    {% set second_index = loop.index %}
+                        <label for="criteria{{ data.criterias[loop.index]}}">{{ criteria }}:</label>
+                        <input type="number" name="value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                    {% endfor %}
+                {% elif 'reason' in data.assignment_method_selected %}
+
+                {% else %} <!-- data.assignment_method_selected is 'interval'  -->
+
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</form>
+{% endblock %}

@@ -31,7 +31,7 @@ class Utils:
 
 
     @staticmethod
-    def first_disagreement(a,b,c, thor):
+    def first_disagreement(self,a,b,c, thor):
         control, partial_sum, total_sum = 0
         for i in range(thor.criteria):
             if not thor.weights[0][i]==0:
@@ -73,11 +73,11 @@ class Utils:
                     if abs(a[i])>=thor.disagreement[i]:
                         control+=1
 
-        get_ms(control, partial_sum, total_sum, thor)
+        self.get_ms(control, partial_sum, total_sum, thor)
 
 
     @staticmethod
-    def second_disagreement(a,b,c, thor):
+    def second_disagreement(self, a,b,c, thor):
         control, partial_sum, total_sum = 0
         for i in range(thor.criteria):
             if not thor.weights[1][i]==0:
@@ -120,11 +120,11 @@ class Utils:
                     if abs(a[i]) >= thor.disagreement[i]:
                         control+=1
 
-        get_ms(control, partial_sum, total_sum, thor)
+        self.get_ms(control, partial_sum, total_sum, thor)
 
 
     @staticmethod
-    def third_disagreement(a,b,c,thor):
+    def third_disagreement(self,a,b,c,thor):
         control, partial_sum, total_sum = 0
         for i in range(thor.criteria):
           if not thor.weights[2][i]==0:
@@ -169,10 +169,9 @@ class Utils:
                 if abs(a[i])>=thor.disagreement[i]:
                     control+=1
 
-        get_ms(control, partial_sum, total_sum, thor)
+        self.get_ms(control, partial_sum, total_sum, thor)
 
 
-    @staticmethod
     def get_ms(control, partial_sum, total_sum, thor):
         if control > 0:
             thor.ms.append(round(0.50,3))

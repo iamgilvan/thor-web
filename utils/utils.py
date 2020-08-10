@@ -19,7 +19,7 @@ class Utils:
     def avg(pertinency: [int]):
         x = 0
         for i in range(len(pertinency)):
-            if(a[i]) != 0:
+            if(pertinency[i]) != 0:
                 x+=pertinency[i]
             tcam = (x/(len(pertinency)))
         return tcam
@@ -171,6 +171,8 @@ class Utils:
 
         get_ms(control, partial_sum, total_sum, thor)
 
+
+    @staticmethod
     def get_ms(control, partial_sum, total_sum, thor):
         if control > 0:
             thor.ms.append(round(0.50,3))
@@ -200,7 +202,7 @@ class Utils:
     @staticmethod
     def check_dominance_thor_two(a,b,c,thor, index_weight):
         aPb_value, not_aPb_value = 0
-        for i in range(cri):
+        for i in range(thor.criteria):
             if a[i]=="aPb":
                 aPb_value+=thor.weights[index_weight][i]*c[i]
             elif a[i]=="aQb":

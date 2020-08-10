@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Error_Utils():
+class Error_Utils(self):
     __errors = dict([
         # Error genéricos
         (400, 'BAD REQUEST'),
@@ -7,8 +7,9 @@ class Error_Utils():
         (500, 'INTERNAL SERVER ERROR')
     ])
 
+
     @staticmethod
-    def get_message(id):
+    def get_message(self, id):
         if id in ErrorUtils.__errors:
             return ErrorUtils.__errors.get(id)
         else:

@@ -41,3 +41,15 @@ def weight():
     # elif thor.assignment_method_selected == 'reason':
     # else: # selected method was interval
     return render_template('weight.html', title='Weight', data=thor)
+
+@app.route('/calculate_weight', methods=['POST'])
+def calculate_weight():
+    weights_partial = []
+    for i in range(1, len(thor.decisors) + 1):
+        weights_partial.append([int(request.form[f'value-{i}-{j}']) for j in range(1, len(thor.criterias) + 1)])
+
+    for i in range(len(thor.decisors)):
+        norm = max(weights_partial[i])
+        for j in range(len(thor.criterias)):
+            thor.weights[i][j] += float((weights_partial[i][j]/norm))
+    return ''

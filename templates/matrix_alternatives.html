@@ -1,0 +1,19 @@
+{% extends "template.html" %} {% block conteudo %}
+<form action="{{ url_for('matrix_pertinence') }}" method="POST">
+    <h6><b>matrix of pertinence</b></h6>
+    {% for alternative in alternatives %}
+    <label for="alternatives{{ alternatives[loop.index]}}">Alternative {{ loop.index }}|</label>
+        {% set first_index = loop.index %}
+        <div class="form-row">
+            <div class="form-inline">
+                {% for criteria in criterias %}
+                {% set second_index = loop.index %}
+                    <label for="criteria{{ criterias[loop.index]}}">{{ criteria }}:</label>
+                    <input style="width: 100px" type="number" name="value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    {% include "buttons.html" %}
+</form>
+{% endblock %}

@@ -13,6 +13,7 @@
         <label for="p">P :</label>
         <div class="row">
             {% for criteria in criterias %}
+                <label for="criteria">{{ criteria }}:</label>
                 <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
             {% endfor %}
         </div>
@@ -22,10 +23,11 @@
         <label for="q">Q :</label>
             <div class="row">
             {% for criteria in criterias %}
+                <label for="criteria">{{ criteria }}:</label>
                 <input type="number" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
             {% endfor %}
             </div>
         </div>
-    <button class="btn btn-primary" type="submit">Submit</button>
+        {% include "buttons.html" %}
 </form>
 {% endblock %}

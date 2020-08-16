@@ -1,10 +1,10 @@
 {% extends "template.html" %}
 
 {% block conteudo %}
-<form action="{{ url_for('pertinency') }}" method="POST">
+<form action="{{ url_for('pertinence') }}" method="POST">
     <p> Please insert the disagreements values</p>
     <div class="form-row">
-        <label for="discordancy">Disagreements :</label>
+        <label for="disagreements">Disagreements :</label>
     </div>
     <div class="form-row">
         {% for criteria in criterias %}

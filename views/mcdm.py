@@ -60,6 +60,44 @@ def disagreement():
     thor.p = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
     return render_template('disagreement.html', title='Discordancy', criterias=thor.criterias)
 
-@app.route('/pertinency', methods=['POST'])
-def pertinency():
-    return 'hello'
+@app.route('/pertinence', methods=['POST'])
+def pertinence():
+    thor.disagreement = [[float(request.form[f'value-d-{i}']) for i in range(1, len(thor.criterias) + 1)]]
+    return render_template('pertinence.html', title='Use pertinence?',criterias=thor.criterias)
+
+
+@app.route('/matrix_alternatives')
+def get_alternative_values():
+    thor.user_pertinence = True if request.form['pertinence'] == '1' else False
+    if thor.user_pertinence:
+        thor.pertinence = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
+        thor.pertinence_tca = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
+    else:
+        thor.pertinence = [[1 for i in range(1, len(thor.criterias) + 1)]]
+        thor.pertinence_tca = [[1 for i in range(1, len(thor.criterias) + 1)]]
+
+    for alt in len(thor.alternatives):
+        line = [0 for column in len(thor.criterias)]
+        thor.main_matrix.append(line)
+        thor.pertinence_matrix.append(line)
+        thor.pertinence_tca_matrix.append(line)
+    return render_template('matrix_alternatives.html', title='Matrix Alternatives', criterias=thor.criterias, alternatives=thor.alternatives)
+
+
+@app.route('/matrix_pertinence', methods=['POST'])
+def get_pertinence_values():
+    if not thor.user_pertinence:
+        redirect(url_for('result'))
+
+    index = 1
+    for i in range(1, len(thor.alternatives) + 1):
+        for j in range(1, len(thor.criterias) + 1):
+            thor.main_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
+            index+=1
+    # Create html
+    return render_template('matrix_pertinence.html', title='Matrix Pertinence', criterias=thor.criterias, alternatives=thor.alternatives)
+
+@app.route('/result', methods=['POST'])
+def show_result():
+    #if thor.user_pertinence:
+    return 'implementing'

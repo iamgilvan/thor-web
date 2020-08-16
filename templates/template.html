@@ -32,6 +32,15 @@
           {% block conteudo %}{% endblock %}
         <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+        <script type="text/javascript">
+          function yesnoCheck() {
+              if (document.getElementById('yesCheck').checked) {
+                  document.getElementById('ifYes').style.display = 'block';
+              }
+              else document.getElementById('ifYes').style.display = 'none';
+          }
+        </script>
     </div>
   </body>
 </html>

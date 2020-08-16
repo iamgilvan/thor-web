@@ -4,7 +4,7 @@ class Thor:
         self.assignment_method_selected = None
         self.alternatives = []
         self.criterias = []
-        self.decisors = [None]
+        self.decisors = []
         self.matrices = []
         self.ms = []
         self.weights = []

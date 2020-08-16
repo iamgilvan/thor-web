@@ -6,7 +6,7 @@ class Thor:
         self.criterias = []
         self.decisors = []
         self.matrices = []
-        sef.main_matrix = []
+        self.main_matrix = []
         self.ms = []
         self.weights = []
         self.disagreement =[]

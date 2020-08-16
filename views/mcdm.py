@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect
 from app import app
 from models.thor import *
 from utils.utils import *
@@ -87,7 +87,7 @@ def get_alternative_values():
 @app.route('/matrix_pertinence', methods=['POST'])
 def get_pertinence_values():
     if not thor.user_pertinence:
-        redirect(url_for('result'))
+        return redirect(url_for('result'))
 
     index = 1
     for i in range(1, len(thor.alternatives) + 1):

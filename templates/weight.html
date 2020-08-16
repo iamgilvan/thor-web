@@ -10,7 +10,7 @@
                     {% for criteria in data.criterias %}
                     {% set second_index = loop.index %}
                         <label for="criteria{{ data.criterias[loop.index]}}">{{ criteria }}:</label>
-                        <input type="number" name="value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                        <input style="width: 100px" type="number" name="value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
                     {% endfor %}
                 {% elif 'reason' in data.assignment_method_selected %}
 
@@ -20,6 +20,6 @@
             </div>
         </div>
     {% endfor %}
-    <button class="btn btn-primary" type="submit">Submit</button>
+    {% include "buttons.html" %}
 </form>
 {% endblock %}

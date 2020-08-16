@@ -1,0 +1,10 @@
+{% block button %}
+<button class="btn btn-danger"  onclick="goBack()">Back</button>
+<button class="btn btn-primary" type="submit">Submit</button>
+
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+{% endblock %}

@@ -4,17 +4,17 @@
         <div class="form-line">
           <div class="col-md-6 mb-3">
             <label for="alternative">Alternatives number</label>
-            <input type="number" class="form-control" name="alternative" value="{{ alternative }}" required>
+            <input type="number" min="1" class="form-control" name="alternative" value="{{ alternative }}" required>
           </div>
           <div class="col-md-6 mb-3">
             <label for="criteria">Criterias number </label>
-            <input type="number" class="form-control" name="criteria" value="{{ criteria }}" required>
+            <input type="number"  min="1" class="form-control" name="criteria" value="{{ criteria }}" required>
           </div>
           <div class="col-md-6 mb-3">
             <label for="decisor">Decisors number</label>
-            <input type="number" class="form-control" name="decisor" value="{{ decisor }}" required>
+            <input type="number" min="1" class="form-control" name="decisor" value="{{ decisor }}" required>
           </div>
         </div>
-        <button class="btn btn-primary" type="submit">Submit</button>
+        {% include "buttons.html" %}
 </form>
 {% endblock %}

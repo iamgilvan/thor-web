@@ -1,0 +1,17 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+<form action="{{ url_for('pertinency') }}" method="POST">
+    <p> Please insert the disagreements values</p>
+    <div class="form-row">
+        <label for="discordancy">Disagreements :</label>
+    </div>
+    <div class="form-row">
+        {% for criteria in criterias %}
+            <label for="criteria">{{ criteria }}:</label>
+            <input type="number" lang="en-US" min="0" step="any" name="value-d-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+        {% endfor %}
+    </div>
+    {% include "buttons.html" %}
+</form>
+{% endblock %}

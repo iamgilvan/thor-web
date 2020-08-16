@@ -52,4 +52,14 @@ def calculate_weight():
         norm = max(weights_partial[i])
         for j in range(len(thor.criterias)):
             thor.weights[i][j] += float((weights_partial[i][j]/norm))
-    return ''
+    return render_template('p_q_values.html', title='P and Q values', criterias=thor.criterias, weights=thor.weights[0])
+
+@app.route('/disagreement', methods=['POST'])
+def disagreement():
+    thor.q = [[float(request.form[f'value-q-{i}']) for i in range(1, len(thor.criterias) + 1)]]
+    thor.p = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
+    return render_template('disagreement.html', title='Discordancy', criterias=thor.criterias)
+
+@app.route('/pertinency', methods=['POST'])
+def pertinency():
+    return 'hello'

@@ -1,6 +1,6 @@
 {% extends "template.html" %} 
 {% block conteudo %}
-<form action="{{ url_for('matriz_alternatives') }}" method="POST">
+<form action="{{ url_for('matrix_alternatives') }}" method="POST">
     <div class="form-check form-check-inline">
         <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="0" id="noCheck" checked>
         <label class="form-check-label" for="inlineRadio1">
@@ -20,12 +20,10 @@
           <div class="row">
               {% for criteria in criterias %}
                   <label for="criteria">{{ criteria }}:</label>
-                  <input type="number" min="0" max="1" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                  <input type="number" min="0" max="1" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
               {% endfor %}
           </div>
       </div>
-    </div>
     {% include "buttons.html" %}
 </form>
-
 {% endblock %}

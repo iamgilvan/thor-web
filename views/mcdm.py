@@ -66,8 +66,8 @@ def pertinence():
     return render_template('pertinence.html', title='Use pertinence?',criterias=thor.criterias)
 
 
-@app.route('/matrix_alternatives')
-def get_alternative_values():
+@app.route('/matrix_alternatives', methods=['POST'])
+def matrix_alternatives():
     thor.user_pertinence = True if request.form['pertinence'] == '1' else False
     if thor.user_pertinence:
         thor.pertinence = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
@@ -76,8 +76,8 @@ def get_alternative_values():
         thor.pertinence = [[1 for i in range(1, len(thor.criterias) + 1)]]
         thor.pertinence_tca = [[1 for i in range(1, len(thor.criterias) + 1)]]
 
-    for alt in len(thor.alternatives):
-        line = [0 for column in len(thor.criterias)]
+    for alt in range(1, len(thor.alternatives) + 1):
+        line = [0 for column in range(1 , len(thor.criterias) + 1)]
         thor.main_matrix.append(line)
         thor.pertinence_matrix.append(line)
         thor.pertinence_tca_matrix.append(line)
@@ -85,7 +85,7 @@ def get_alternative_values():
 
 
 @app.route('/matrix_pertinence', methods=['POST'])
-def get_pertinence_values():
+def matrix_pertinence():
     if not thor.user_pertinence:
         return redirect(url_for('result'))
 
@@ -97,7 +97,7 @@ def get_pertinence_values():
     return render_template('matrix_pertinence.html', title='Matrix Pertinence', criterias=thor.criterias, alternatives=thor.alternatives)
 
 @app.route('/result', methods=['POST'])
-def show_result():
+def result():
     if thor.user_pertinence:
         index = 1
         for i in range(1, len(thor.alternatives) + 1):

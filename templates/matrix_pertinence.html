@@ -1,6 +1,6 @@
 {% extends "template.html" %} {% block conteudo %}
-<form action="{{ url_for('matrix_pertinence') }}" method="POST">
-    <h6><b>matrix of Alternatives</b></h6>
+<form action="{{ url_for('result') }}" method="POST">
+    <h6><b>Matrix of pertinence</b></h6>
     {% for alternative in alternatives %}
     <label for="alternatives{{ alternatives[loop.index]}}">Alternative {{ loop.index }}|</label>
         {% set first_index = loop.index %}

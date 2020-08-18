@@ -94,10 +94,20 @@ def get_pertinence_values():
         for j in range(1, len(thor.criterias) + 1):
             thor.main_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
             index+=1
-    # Create html
     return render_template('matrix_pertinence.html', title='Matrix Pertinence', criterias=thor.criterias, alternatives=thor.alternatives)
 
 @app.route('/result', methods=['POST'])
 def show_result():
-    #if thor.user_pertinence:
+    if thor.user_pertinence:
+        index = 1
+        for i in range(1, len(thor.alternatives) + 1):
+            for j in range(1, len(thor.criterias) + 1):
+                thor.pertinence_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
+                thor.pertinence_tca_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
+                index+=1
+    else:
+        for i in range(1, len(thor.alternatives) + 1):
+            for j in range(1, len(thor.criterias) + 1):
+                thor.pertinence_matrix[i][j]=1
+                thor.pertinence_tca_matrix[i][j]=1
     return 'implementing'

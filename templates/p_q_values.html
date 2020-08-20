@@ -11,23 +11,24 @@
     <p> Please insert the P and Q values</p>
     <div class="form-row">
         <label for="p">P :</label>
-        <div class="row">
+    </div>
+        <div class="form-row">
             {% for criteria in criterias %}
                 <label for="criteria">{{ criteria }}:</label>
                 <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
             {% endfor %}
         </div>
-    </div>
+
     <hr style="width:50%;text-align:left;margin-left:0">
     <div class="form-row">
         <label for="q">Q :</label>
-            <div class="row">
+    </div>
+            <div class="form-row">
             {% for criteria in criterias %}
                 <label for="criteria">{{ criteria }}:</label>
                 <input type="number" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
             {% endfor %}
             </div>
-        </div>
         {% include "buttons.html" %}
 </form>
 {% endblock %}

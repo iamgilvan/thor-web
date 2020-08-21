@@ -9,26 +9,34 @@
         {% endfor %}
     </div>
     <p> Please insert the P and Q values</p>
-    <div class="form-row">
-        <label for="p">P :</label>
-    </div>
-        <div class="form-row">
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
             {% for criteria in criterias %}
-                <label for="criteria">{{ criteria }}:</label>
-                <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                <th scope="col">{{ criteria }}</th>
             {% endfor %}
-        </div>
-
-    <hr style="width:50%;text-align:left;margin-left:0">
-    <div class="form-row">
-        <label for="q">Q :</label>
-    </div>
-            <div class="form-row">
-            {% for criteria in criterias %}
-                <label for="criteria">{{ criteria }}:</label>
-                <input type="number" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
-            {% endfor %}
-            </div>
-        {% include "buttons.html" %}
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">P </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row">Q </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    {% include "buttons.html" %}
 </form>
 {% endblock %}

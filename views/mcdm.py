@@ -110,4 +110,4 @@ def result():
             for j in range(1, len(thor.criterias) + 1):
                 thor.pertinence_matrix[i][j]=1
                 thor.pertinence_tca_matrix[i][j]=1
-    return 'implementing'
+    return '    '

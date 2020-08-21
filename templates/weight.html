@@ -1,25 +1,37 @@
 {% extends "template.html" %} {% block conteudo %}
 <form action="{{ url_for('calculate_weight') }}" method="POST">
     <h6><b>Decision makers weights</b></h6>
-    {% for decisor in data.decisors %}
-    <label for="decisors{{ data.decisors[loop.index]}}">Decisor {{ loop.index }}:</label>
-        {% set first_index = loop.index %}
-        <div class="form-row">
-            <div class="form-inline">
-                {% if 'direct' in data.assignment_method_selected %}
-                    {% for criteria in data.criterias %}
-                    {% set second_index = loop.index %}
-                        <label for="criteria{{ data.criterias[loop.index]}}">{{ criteria }}:</label>
+    {% if 'direct' in data.assignment_method_selected %}
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            {% for criteria in data.criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for decisor in data.decisors %}
+            {% set first_index = loop.index %}
+            <tr>
+                <th scope="row">Decisor {{ loop.index }}:</th>
+                {% for criteria in data.criterias %}
+                {% set second_index = loop.index %}
+                    <td scope="col">
                         <input style="width: 100px" type="number" name="value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
-                    {% endfor %}
-                {% elif 'reason' in data.assignment_method_selected %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-                {% else %} <!-- data.assignment_method_selected is 'interval'  -->
+    {% elif 'reason' in data.assignment_method_selected %}
 
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
+    {% else %} <!-- data.assignment_method_selected is 'interval'  -->
+
+    {% endif %}
     {% include "buttons.html" %}
 </form>
 {% endblock %}

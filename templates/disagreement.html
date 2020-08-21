@@ -3,15 +3,26 @@
 {% block conteudo %}
 <form action="{{ url_for('pertinence') }}" method="POST">
     <p> Please insert the disagreements values</p>
-    <div class="form-row">
-        <label for="disagreements">Disagreements :</label>
-    </div>
-    <div class="form-row">
-        {% for criteria in criterias %}
-            <label for="criteria">{{ criteria }}:</label>
-            <input type="number" lang="en-US" min="0" step="any" name="value-d-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
-        {% endfor %}
-    </div>
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">D </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-d-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
     {% include "buttons.html" %}
 </form>
 {% endblock %}

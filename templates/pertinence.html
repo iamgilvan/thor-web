@@ -14,16 +14,26 @@
         </label>
       </div>
 
-      <div id="ifYes" style="display:none" class="form-row">
-          <h6>Relevance of criteria</h6>
-          <label for="pertinence">Pertinence |</label>
-          <div class="row">
-              {% for criteria in criterias %}
-                  <label for="criteria">{{ criteria }}:</label>
-                  <input type="number" min="0" max="1" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
-              {% endfor %}
-          </div>
-      </div>
+      <table class="table" id="ifYes" style="display:none">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">D </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
     {% include "buttons.html" %}
 </form>
 {% endblock %}

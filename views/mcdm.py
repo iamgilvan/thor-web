@@ -1,22 +1,27 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, session
 from app import app
 from models.thor import *
 from utils.utils import *
+from utils.payload import *
+import json
+from collections import namedtuple
 
-thor = Thor()
 
 @app.route('/start')
 def start():
+    thor = Thor()
     thor.selected_method = int(request.args.get('method'))
-    len(thor.alternatives)
+    session['thor'] = json.dumps(thor.__dict__) 
     return render_template('main.html', title='Main Parameters', alternative=len(thor.alternatives), criteria=len(thor.criterias), decisor=len(thor.decisors))
 
 
 @app.route('/main',  methods=['GET', 'POST',])
 def main():
+    thor = Payload(session.get('thor', None))
     thor.alternatives = [None] * int(request.form['alternative'])
     thor.decisors = [None] * int(request.form['decisor'])
     thor.criterias = [None] * int(request.form['criteria'])
+    session['thor'] = json.dumps(thor.__dict__)
     return render_template('info_names.html', title='Alternatives and Criterias name',
                             alternatives=thor.alternatives,
                             criterias=thor.criterias)
@@ -24,12 +29,15 @@ def main():
 
 @app.route('/matrix', methods=['POST'])
 def matrix():
+    thor = Payload(session.get('thor', None))
     thor.alternatives = [request.form[f'alternative{i}'] for i in range(1, len(thor.alternatives) + 1)]
     thor.criterias = [request.form[f'criteria{i}'] for i in range(1, len(thor.criterias) + 1)]
+    session['thor'] = json.dumps(thor.__dict__)
     return render_template('matrix.html', title='Matrix', criterias=thor.criterias, alternatives=thor.alternatives, decisors=thor.decisors)
 
 @app.route('/result', methods=['POST'])
 def result():
+    thor = Payload(session.get('thor', None))
     peso=[];peso2=[];peso3=[];peso4=[];ms1=0;ms2=0;ms3=0;p=[];q=[];d=[];t1=[];t2=[];t3=[];escolha=0;continuar=0;controle=0;testar=0;controlemaior=0;dic=0;controlador=0
     matrizs1=[];matrizs2=[];matrizs3=[];rs1=[];rs2=[];rs3=[];rs1o=[];rs2o=[];rs3o=[];pertinencia=[];pertinencia2=[];pertinenciatca=[];pertinencia2tca=[];indice=[];alternativas=[];alternativaso=[];criterios=[];cris1=[];cris2=[];cris3=[];cristotal=[];var=0;contador=0;originals1=[];originals2=[];originals3=[];medtcan=[];rtcan=[];tcaneb=[];neb=0;indice=0;tca1=0;tca2=0;tca3=0;f1=0;f2=0;f3=0;ver1=0;ver2=0;ver3=0;pos=0;pesofim=[];pesodec=[];pesom=[1];pesom2=[1];norm=0;ok=0
 
@@ -67,7 +75,12 @@ def result():
             for j in range(cri):
                 peso[j]+=(pesofim[i][j]/norm)
     elif assignment_method_selected == '2':
-        print("");
+        for i in range(1, len(thor.decisors) + 1):
+            norm=max(pesofim[i])
+            for j in range(cri):
+                peso[j]+=(pesofim[i][j]/norm)
+        for i in range(cri):
+            peso[i]=peso[i]/len(thor.decisors)
     else:
         print("");
 
@@ -534,4 +547,5 @@ def result():
         tca3=0
         ver3=0
         contador+=1
-    return '    '
+    #session['thor'] = json.dumps(thor.__dict__)
+    return render_template('result.html', title="Result", thor=thor)

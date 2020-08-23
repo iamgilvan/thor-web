@@ -216,6 +216,8 @@ def result():
                             matrizs1[i][j]=0.5
                             matrizs1[j][i]=matrizs1[i][j]
                     c=[];b=[];e=[];f=[]
+                    if thor.selected_method == 2:
+                        g=[];h=[]
         for i in range(alt):
             r1=0.0
             for j in range(alt):
@@ -350,6 +352,8 @@ def result():
                             matrizs2[i][j]=0.5
                             matrizs2[j][i]=matrizs2[i][j]
                     c=[];b=[];e=[];f=[]
+                    if thor.selected_method == 2:
+                        g=[];h=[]
         for i in range(alt):
             r2=0.0
             for j in range(alt):
@@ -484,6 +488,8 @@ def result():
                             matrizs3[i][j]=0.5
                             matrizs3[j][i]=matrizs3[i][j]
                     c=[];b=[];e=[];f=[]
+                    if thor.selected_method == 2:
+                        g=[];h=[]
         for i in range(alt):
             r3=0.0
             for j in range(alt):

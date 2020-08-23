@@ -157,34 +157,64 @@ def result():
                         f.append(z)
                         g.append(v)
                         h.append(t)
-                    if(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
-                        check1 = Utils.discordancias1(b,c,g,d,peso, cri)
-                        check2 = Utils.discordancias1(f,e,h,d,peso, cri)
-                        if(check1==0.5) or (check2==0.5):
-                            matrizs1[i][j]=0.5
-                            matrizs1[j][i]=0.5
-                        else:
-                            matrizs1[i][j]=round(Utils.discordancias1(b,c,g,d,peso, cri),3)
-                            matrizs1[j][i]=round(Utils.discordancias1(f,e,h,d,peso, cri),3)
-                    elif(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)!="domina"):
-                        ms1 = Utils.discordancias1(b,c,g,d,peso, cri)
-                        if(ms1 !=0.5):
-                            matrizs1[i][j]=round(ms1,3)
-                            matrizs1[j][i]=0
-                        else:
-                            matrizs1[i][j]=0.5
-                            matrizs1[j][i]=0.5
-                    elif(Utils.s1(c,b,g,peso, cri)!="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
-                        ms1 = Utils.discordancias1(f,e,h,d,peso, cri)
-                        if(ms1!=0.5):
-                            matrizs1[i][j]=0
-                            matrizs1[j][i]=round(ms1,3)
+                    if thor.selected_method == 1:
+                        if(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
+                            check1 = Utils.discordancias1(b,c,g,d,peso, cri)
+                            check2 = Utils.discordancias1(f,e,h,d,peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=0.5
+                            else:
+                                matrizs1[i][j]=round(Utils.discordancias1(b,c,g,d,peso, cri),3)
+                                matrizs1[j][i]=round(Utils.discordancias1(f,e,h,d,peso, cri),3)
+                        elif(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)!="domina"):
+                            ms1 = Utils.discordancias1(b,c,g,d,peso, cri)
+                            if(ms1 !=0.5):
+                                matrizs1[i][j]=round(ms1,3)
+                                matrizs1[j][i]=0
+                            else:
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=0.5
+                        elif(Utils.s1(c,b,g,peso, cri)!="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
+                            ms1 = Utils.discordancias1(f,e,h,d,peso, cri)
+                            if(ms1!=0.5):
+                                matrizs1[i][j]=0
+                                matrizs1[j][i]=round(ms1,3)
+                            else:
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=matrizs1[i][j]
                         else:
                             matrizs1[i][j]=0.5
                             matrizs1[j][i]=matrizs1[i][j]
                     else:
-                        matrizs1[i][j]=0.5
-                        matrizs1[j][i]=matrizs1[i][j]
+                        if(Utils.s1T2(c,b,g, p,q,peso,cri)=="domina") and (Utils.s1T2(e,f,h,p,q,peso,cri)=="domina"):
+                            check1 = Utils.discordancias1T2(b,c,g,d,p, q, peso, cri)
+                            check2 = Utils.discordancias1T2(f,e,h, d,p, q, peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=0.5
+                            else:
+                                matrizs1[i][j]=round(Utils.discordancias1T2(b,c,g, d,p, q, peso, cri),3)
+                                matrizs1[j][i]=round(Utils.discordancias1T2(f,e,h, d,p, q, peso, cri),3)
+                        elif(Utils.s1T2(c,b,g, p,q,peso,cri)=="domina") and (Utils.s1T2(e,f,h, p,q,peso,cri)!="domina"):
+                            ms1 = Utils.discordancias1T2(b,c,g, d,p, q, peso, cri)
+                            if(ms1 !=0.5):
+                                matrizs1[i][j]=round(ms1,3)
+                                matrizs1[j][i]=0
+                            else:
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=0.5
+                        elif(Utils.s1T2(c,b,g ,p,q,peso,cri)!="domina") and (Utils.s1T2(e,f,h, p,q,peso,cri)=="domina"):
+                            ms1 = Utils.discordancias1T2(f,e,h,d,p, q, peso, cri)
+                            if(ms1!=0.5):
+                                matrizs1[i][j]=0
+                                matrizs1[j][i]=round(ms1,3)
+                            else:
+                                matrizs1[i][j]=0.5
+                                matrizs1[j][i]=matrizs1[i][j]
+                        else:
+                            matrizs1[i][j]=0.5
+                            matrizs1[j][i]=matrizs1[i][j]
                     c=[];b=[];e=[];f=[]
         for i in range(alt):
             r1=0.0
@@ -261,34 +291,64 @@ def result():
                         f.append(z)
                         g.append(v)
                         h.append(t)
-                    if(Utils.s2(c,b,g,peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
-                        check1 = Utils.discordancias2(b,c,g, d, peso, cri)
-                        check2 = Utils.discordancias2(f,e,h,d,peso, cri)
-                        if(check1==0.5) or (check2==0.5):
-                            matrizs2[i][j]=0.5
-                            matrizs2[j][i]=0.5
-                        else:
-                            matrizs2[i][j]=round(Utils.discordancias2(b,c,g,d,peso, cri),3)
-                            matrizs2[j][i]=round(Utils.discordancias2(f,e,h, d,peso, cri),3)
-                    elif(Utils.s2(c,b,g, peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)!="domina"):
-                        ms2 = Utils.discordancias2(b,c,g, d, peso, cri)
-                        if(ms2!=0.5):
-                            matrizs2[i][j]=round(ms2,3)
-                            matrizs2[j][i]=0
-                        else:
-                            matrizs2[i][j]=0.5
-                            matrizs2[j][i]=0.5
-                    elif(Utils.s2(c,b,g, peso, cri)!="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
-                        ms2 = Utils.discordancias2(f,e,h, d,peso, cri)
-                        if(ms2!=0.5):
-                            matrizs2[i][j]=0
-                            matrizs2[j][i]=round(ms2,3)
+                    if thor.selected_method == 1:
+                        if(Utils.s2(c,b,g,peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
+                            check1 = Utils.discordancias2(b,c,g, d, peso, cri)
+                            check2 = Utils.discordancias2(f,e,h,d,peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=0.5
+                            else:
+                                matrizs2[i][j]=round(Utils.discordancias2(b,c,g,d,peso, cri),3)
+                                matrizs2[j][i]=round(Utils.discordancias2(f,e,h, d,peso, cri),3)
+                        elif(Utils.s2(c,b,g, peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)!="domina"):
+                            ms2 = Utils.discordancias2(b,c,g, d, peso, cri)
+                            if(ms2!=0.5):
+                                matrizs2[i][j]=round(ms2,3)
+                                matrizs2[j][i]=0
+                            else:
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=0.5
+                        elif(Utils.s2(c,b,g, peso, cri)!="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
+                            ms2 = Utils.discordancias2(f,e,h, d,peso, cri)
+                            if(ms2!=0.5):
+                                matrizs2[i][j]=0
+                                matrizs2[j][i]=round(ms2,3)
+                            else:
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=matrizs2[i][j]
                         else:
                             matrizs2[i][j]=0.5
                             matrizs2[j][i]=matrizs2[i][j]
                     else:
-                        matrizs2[i][j]=0.5
-                        matrizs2[j][i]=matrizs2[i][j]
+                        if(Utils.s2T2(c,b,g,p,q,peso,cri)=="domina") and (Utils.s2T2(e,f,h,p,q,peso,cri)=="domina"):
+                            check1 = Utils.discordancias2T2(b,c,g,d,p, q, peso, cri)
+                            check2 = Utils.discordancias2T2(f,e,h,d,p, q, peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=0.5
+                            else:
+                                matrizs2[i][j]=round(Utils.discordancias2T2(b,c,g,d,p, q, peso, cri),3)
+                                matrizs2[j][i]=round(Utils.discordancias2T2(f,e,h,d,p, q, peso, cri),3)
+                        elif(Utils.s2T2(c,b,g,p,q,peso,cri)=="domina") and (Utils.s2T2(e,f,h, p,q,peso,cri)!="domina"):
+                            ms2 = Utils.discordancias2T2(b,c,g, d, peso, cri)
+                            if(ms2!=0.5):
+                                matrizs2[i][j]=round(ms2,3)
+                                matrizs2[j][i]=0
+                            else:
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=0.5
+                        elif(Utils.s2T2(c,b,g,p,q,peso,cri)!="domina") and (Utils.s2T2(e,f,h, p,q,peso,cri)=="domina"):
+                            ms2 = Utils.discordancias2T2(f,e,h,d,p, q, peso, cri)
+                            if(ms2!=0.5):
+                                matrizs2[i][j]=0
+                                matrizs2[j][i]=round(ms2,3)
+                            else:
+                                matrizs2[i][j]=0.5
+                                matrizs2[j][i]=matrizs2[i][j]
+                        else:
+                            matrizs2[i][j]=0.5
+                            matrizs2[j][i]=matrizs2[i][j]
                     c=[];b=[];e=[];f=[]
         for i in range(alt):
             r2=0.0
@@ -365,34 +425,64 @@ def result():
                         f.append(z)
                         g.append(v)
                         h.append(t)
-                    if(Utils.s3(c,b,g, peso,cri)=="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
-                        check1 = Utils.discordancias3(b,c,g,d,peso, cri)
-                        check2 = Utils.discordancias3(f,e,h,d,peso, cri)
-                        if(check1==0.5) or (check2==0.5):
-                            matrizs3[i][j]=0.5
-                            matrizs3[j][i]=0.5
-                        else:
-                            matrizs3[i][j]=round(Utils.discordancias3(b,c,g,d,peso, cri),3)
-                            matrizs3[j][i]=round(Utils.discordancias3(f,e,h, d,peso, cri),3)
-                    elif(Utils.s3(c,b,g, peso, cri)=="domina") and (Utils.s3(e,f,h, peso, cri)!="domina"):
-                        ms3 = Utils.discordancias3(b,c,g)
-                        if(ms3!=0.5):
-                            matrizs3[i][j]=round(ms3,3)
-                            matrizs3[j][i]=0
-                        else:
-                            matrizs3[i][j]=0.5
-                            matrizs3[j][i]=0.5
-                    elif(Utils.s3(c,b,g,peso,cri)!="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
-                        ms3 = Utils.discordancias3(f,e,h, d,peso, cri)
-                        if(ms3!=0.5):
-                            matrizs3[i][j]=0
-                            matrizs3[j][i]=round(ms3,3)
+                    if thor.selected_method == 1:
+                        if(Utils.s3(c,b,g, peso,cri)=="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
+                            check1 = Utils.discordancias3(b,c,g,d,peso, cri)
+                            check2 = Utils.discordancias3(f,e,h,d,peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=0.5
+                            else:
+                                matrizs3[i][j]=round(Utils.discordancias3(b,c,g,d,peso, cri),3)
+                                matrizs3[j][i]=round(Utils.discordancias3(f,e,h, d,peso, cri),3)
+                        elif(Utils.s3(c,b,g, peso, cri)=="domina") and (Utils.s3(e,f,h, peso, cri)!="domina"):
+                            ms3 = Utils.discordancias3(b,c,g,d,peso, cri)
+                            if(ms3!=0.5):
+                                matrizs3[i][j]=round(ms3,3)
+                                matrizs3[j][i]=0
+                            else:
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=0.5
+                        elif(Utils.s3(c,b,g,peso,cri)!="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
+                            ms3 = Utils.discordancias3(f,e,h, d,peso, cri)
+                            if(ms3!=0.5):
+                                matrizs3[i][j]=0
+                                matrizs3[j][i]=round(ms3,3)
+                            else:
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=matrizs3[i][j]
                         else:
                             matrizs3[i][j]=0.5
                             matrizs3[j][i]=matrizs3[i][j]
                     else:
-                        matrizs3[i][j]=0.5
-                        matrizs3[j][i]=matrizs3[i][j]
+                        if(Utils.s3T2(c,b,p,q,peso,cri)=="domina") and (Utils.s3T2(e,f,h,p,q,peso,cri)=="domina"):
+                            check1 = Utils.discordancias3T2(b,c,g,d,p, q, peso, cri)
+                            check2 = Utils.discordancias3T2(f,e,h,d,p, q, peso, cri)
+                            if(check1==0.5) or (check2==0.5):
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=0.5
+                            else:
+                                matrizs3[i][j]=round(Utils.discordancias3T2(b,c,g,d,p, q, peso, cri),3)
+                                matrizs3[j][i]=round(Utils.discordancias3T2(f,e,h,d,p, q, peso, cri),3)
+                        elif(Utils.s3T2(c,b,g,p,q,peso,cri)=="domina") and (Utils.s3T2(e,f,h,p,q,peso,cri)!="domina"):
+                            ms3 = Utils.discordancias3T2(b,c,g,d,p, q, peso, cri)
+                            if(ms3!=0.5):
+                                matrizs3[i][j]=round(ms3,3)
+                                matrizs3[j][i]=0
+                            else:
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=0.5
+                        elif(Utils.s3T2(c,b,g,p,q,peso,cri)!="domina") and (Utils.s3T2(e,f,h,p,q,peso,cri)=="domina"):
+                            ms3 = Utils.discordancias3T2(f,e,h,d,p, q, peso, cri)
+                            if(ms3!=0.5):
+                                matrizs3[i][j]=0
+                                matrizs3[j][i]=round(ms3,3)
+                            else:
+                                matrizs3[i][j]=0.5
+                                matrizs3[j][i]=matrizs3[i][j]
+                        else:
+                            matrizs3[i][j]=0.5
+                            matrizs3[j][i]=matrizs3[i][j]
                     c=[];b=[];e=[];f=[]
         for i in range(alt):
             r3=0.0

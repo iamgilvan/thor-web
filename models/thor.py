@@ -5,15 +5,10 @@ class Thor:
         self.alternatives = []
         self.criterias = []
         self.decisors = []
-        self.matrices = []
-        self.main_matrix = []
-        self.ms = []
-        self.weights = []
-        self.disagreement =[]
-        self.q = []
-        self.p = []
-        self.user_pertinence = False
-        self.pertinence = []
-        self.pertinence_tca = []
-        self.pertinence_matrix = []
-        self.pertinence_tca_matrix = []
+        self.result = []
+
+class Result:
+    def __init__(self):
+        self.S_result = []
+        self.somatorio = []
+        self.original = ""

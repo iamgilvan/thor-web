@@ -1,0 +1,150 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<form action="{{ url_for('result') }}" method="POST">
+    <h6><b>Please let me know the main infos</b></h6>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="inputGroupSelect01">What assignment method do you want to use?</label>
+        </div>
+        <select id="selectBox" name="assignment" onchange="javascript:changeAssignment();" class="custom-select" id="inputGroupSelect01" required>
+          <option selected value="1">Direct Assignment</option>
+          <option value="2">Reason Scale</option>
+          <option value="3">Interval Scale</option>
+        </select>
+    </div>
+
+    <table id="weight" class="table" style="display:block">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Direct Assignment</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for decisor in decisors %}
+            {% set first_index = loop.index %}
+            <tr>
+                <th scope="row">Decisor {{ loop.index }} W:</th>
+                {% for criteria in criterias %}
+                {% set second_index = loop.index %}
+                    <td scope="col">
+                        <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Matrix</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for alternative in alternatives %}
+            {% set first_index = loop.index %}
+            <tr>
+                <th scope="row">{{ alternative }}</th>
+                {% for criteria in criterias %}
+                {% set second_index = loop.index %}
+                    <td scope="col">
+                        <input style="width: 100px" type="number" step="any"  name="alternative-value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <th scope="row">P </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row">Q </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row">D </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input type="number" lang="en-US" min="0" step="any" name="value-d-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Do you want use pertinence</p>
+    <div class="form-check form-check-inline">
+        <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="0" id="noCheck" checked>
+        <label class="form-check-label" for="inlineRadio1">
+          No
+        </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="1" id="yesCheck">
+        <label class="form-check-label" for="inlineRadio2">
+          Yes
+        </label>
+      </div>
+    <table class="table" id="matrixPertinence" style="display:none">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Pertinence of Criteria</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Pertinence </th>
+                {% for criteria in criterias %}
+                    <td scope="col">
+                        <input id="matrixPertinenceValue" type="number" lang="en-US" min="0" step="any" name="value-matrix-c-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" id="matrixPertinence" style="display:none">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Matrix of Pertinence</th>
+            {% for criteria in criterias %}
+                <th scope="col">{{ criteria }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for alternative in alternatives %}
+            {% set first_index = loop.index %}
+            <tr>
+                <th scope="row">{{ alternative }}</th>
+                {% for criteria in criterias %}
+                {% set second_index = loop.index %}
+                    <td scope="col">
+                        <input id="matrixPertinenceValue" style="width: 100px" type="number" name="value-matrix-p-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include "buttons.html" %}
+</form>
+{% endblock %}

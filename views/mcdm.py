@@ -9,10 +9,7 @@ thor = Thor()
 def start():
     thor.selected_method = int(request.args.get('method'))
     len(thor.alternatives)
-    return render_template('main.html', title='Main Parameters',
-                            alternative=len(thor.alternatives),
-                            criteria=len(thor.criterias),
-                            decisor=len(thor.decisors))
+    return render_template('main.html', title='Main Parameters', alternative=len(thor.alternatives), criteria=len(thor.criterias), decisor=len(thor.decisors))
 
 
 @app.route('/main',  methods=['GET', 'POST',])
@@ -25,89 +22,420 @@ def main():
                             criterias=thor.criterias)
 
 
-@app.route('/assignment',  methods=['POST'])
-def assignment():
+@app.route('/matrix', methods=['POST'])
+def matrix():
     thor.alternatives = [request.form[f'alternative{i}'] for i in range(1, len(thor.alternatives) + 1)]
     thor.criterias = [request.form[f'criteria{i}'] for i in range(1, len(thor.criterias) + 1)]
-    # creating the matrices
-    thor.matrices = [Utils.create_initial_matrix(len(thor.alternatives)) for i in range(3)]
-    thor.weights = [Utils.create_initial_weight(len(thor.criterias)) for i in range(3)]
-    return render_template('assignment.html', title='Assignment method')
-
-@app.route('/weight', methods=['POST'])
-def weight():
-    thor.assignment_method_selected = request.form['assignment']
-    # if thor.assignment_method_selected == 'direct':
-    # elif thor.assignment_method_selected == 'reason':
-    # else: # selected method was interval
-    return render_template('weight.html', title='Weight', data=thor)
-
-@app.route('/calculate_weight', methods=['POST'])
-def calculate_weight():
-    weights_partial = []
-    for i in range(1, len(thor.decisors) + 1):
-        weights_partial.append([int(request.form[f'value-{i}-{j}']) for j in range(1, len(thor.criterias) + 1)])
-
-    for i in range(len(thor.decisors)):
-        norm = max(weights_partial[i])
-        for j in range(len(thor.criterias)):
-            thor.weights[i][j] += float((weights_partial[i][j]/norm))
-    return render_template('p_q_values.html', title='P and Q values', criterias=thor.criterias, weights=thor.weights[0])
-
-@app.route('/disagreement', methods=['POST'])
-def disagreement():
-    thor.q = [[float(request.form[f'value-q-{i}']) for i in range(1, len(thor.criterias) + 1)]]
-    thor.p = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
-    return render_template('disagreement.html', title='Discordancy', criterias=thor.criterias)
-
-@app.route('/pertinence', methods=['POST'])
-def pertinence():
-    thor.disagreement = [[float(request.form[f'value-d-{i}']) for i in range(1, len(thor.criterias) + 1)]]
-    return render_template('pertinence.html', title='Use pertinence?',criterias=thor.criterias)
-
-
-@app.route('/matrix_alternatives', methods=['POST'])
-def matrix_alternatives():
-    thor.user_pertinence = True if request.form['pertinence'] == '1' else False
-    if thor.user_pertinence:
-        thor.pertinence = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
-        thor.pertinence_tca = [[float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]]
-    else:
-        thor.pertinence = [[1 for i in range(1, len(thor.criterias) + 1)]]
-        thor.pertinence_tca = [[1 for i in range(1, len(thor.criterias) + 1)]]
-
-    for alt in range(1, len(thor.alternatives) + 1):
-        line = [0 for column in range(1 , len(thor.criterias) + 1)]
-        thor.main_matrix.append(line)
-        thor.pertinence_matrix.append(line)
-        thor.pertinence_tca_matrix.append(line)
-    return render_template('matrix_alternatives.html', title='Matrix Alternatives', criterias=thor.criterias, alternatives=thor.alternatives)
-
-
-@app.route('/matrix_pertinence', methods=['POST'])
-def matrix_pertinence():
-    if not thor.user_pertinence:
-        return redirect(url_for('result'))
-
-    index = 1
-    for i in range(1, len(thor.alternatives) + 1):
-        for j in range(1, len(thor.criterias) + 1):
-            thor.main_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
-            index+=1
-    return render_template('matrix_pertinence.html', title='Matrix Pertinence', criterias=thor.criterias, alternatives=thor.alternatives)
+    return render_template('matrix.html', title='Matrix', criterias=thor.criterias, alternatives=thor.alternatives, decisors=thor.decisors)
 
 @app.route('/result', methods=['POST'])
 def result():
-    if thor.user_pertinence:
-        index = 1
-        for i in range(1, len(thor.alternatives) + 1):
-            for j in range(1, len(thor.criterias) + 1):
-                thor.pertinence_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
-                thor.pertinence_tca_matrix[i][j]=float((request.form[f'value-{index}-{index}']))
-                index+=1
+    peso=[];peso2=[];peso3=[];peso4=[];ms1=0;ms2=0;ms3=0;p=[];q=[];d=[];t1=[];t2=[];t3=[];escolha=0;continuar=0;controle=0;testar=0;controlemaior=0;dic=0;controlador=0
+    matrizs1=[];matrizs2=[];matrizs3=[];rs1=[];rs2=[];rs3=[];rs1o=[];rs2o=[];rs3o=[];pertinencia=[];pertinencia2=[];pertinenciatca=[];pertinencia2tca=[];indice=[];alternativas=[];alternativaso=[];criterios=[];cris1=[];cris2=[];cris3=[];cristotal=[];var=0;contador=0;originals1=[];originals2=[];originals3=[];medtcan=[];rtcan=[];tcaneb=[];neb=0;indice=0;tca1=0;tca2=0;tca3=0;f1=0;f2=0;f3=0;ver1=0;ver2=0;ver3=0;pos=0;pesofim=[];pesodec=[];pesom=[1];pesom2=[1];norm=0;ok=0
+
+    cri = len(thor.criterias)
+    criterios = thor.criterias
+    alt = len(thor.alternatives)
+    alternativas = thor.alternatives
+    peso = [ 0 for i in range(cri)]
+    peso2 = [ 0 for i in range(cri)]
+    peso4 = [ 0 for i in range(cri)]
+    for a in range(alt):
+        linha=[]
+        for b in range(alt):
+            linha.append(0)
+        matrizs1.append(linha)
+    for a in range(alt):
+        linha=[]
+        for b in range(alt):
+            linha.append(0)
+        matrizs2.append(linha)
+    for a in range(alt):
+        linha=[]
+        for b in range(alt):
+            linha.append(0)
+        matrizs3.append(linha)
+
+
+    assignment_method_selected = request.form['assignment']
+    pesofim = []
+    if assignment_method_selected == '1':
+        for i in range(1, len(thor.decisors) + 1):
+            pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor.criterias) + 1)])
+        for i in range(len(thor.decisors)):
+            norm=max(pesofim[i])
+            for j in range(cri):
+                peso[j]+=(pesofim[i][j]/norm)
+    elif assignment_method_selected == '2':
+        print("");
     else:
-        for i in range(1, len(thor.alternatives) + 1):
-            for j in range(1, len(thor.criterias) + 1):
-                thor.pertinence_matrix[i][j]=1
-                thor.pertinence_tca_matrix[i][j]=1
+        print("");
+
+    for i in range(cri):
+        peso2[i]=peso[i]
+        peso4[i]=peso[i]
+
+    q = [float(request.form[f'value-q-{i}']) for i in range(1, len(thor.criterias) + 1)]
+    p = [float(request.form[f'value-p-{i}']) for i in range(1, len(thor.criterias) + 1)]
+    d = [float(request.form[f'value-d-{i}']) for i in range(1, len(thor.criterias) + 1)]
+
+    matriz=[]
+    for a in range(alt):
+        linha=[]
+        for b in range(cri):
+            linha.append(0)
+        matriz.append(linha)
+    for a in range(alt):
+        linha=[]
+        for b in range(cri):
+            linha.append(0)
+        pertinencia2.append(linha)
+    for a in range(alt):
+        linha=[]
+        for b in range(cri):
+            linha.append(0)
+        pertinencia2tca.append(linha)
+    user_pertinence = True if request.form['pertinence'] == '1' else False
+
+    if user_pertinence:
+        #pegado os pesos da matriz de pertinencia
+        for i in range(cri):
+            pertinencia.append(float(request.form[f'value-matrix-c-{i}']))
+            pertinenciatca.append(float(request.form[f'value-matrix-c-{i}']))
+        #pegado a matriz de pertinencia
+        for i in range(alt):
+          for j in range(cri):
+            pertinencia2[i][j]=float(request.form[f'value-matrix-p-{i}-{j}'])
+            pertinencia2tca[i][j]=float(request.form[f'value-matrix-p-{i}-{j}'])
+    else:
+        for i in range(cri):
+            pertinencia.append(1)
+            pertinenciatca.append(1)
+        for i in range(alt):
+            for j in range(cri):
+                pertinencia2[i][j]=1
+                pertinencia2tca[i][j]=1
+
+    for i in range(1, len(thor.alternatives) + 1):
+        for j in range(1, len(thor.criterias) + 1):
+            matriz[i-1][j-1]=float(request.form[f'alternative-value-{i}-{j}'])
+
+    media1=round(Utils.media(pertinencia),4)
+    medtcan.append(media1)
+    for i in range(alt):
+        media1=round(Utils.media(pertinencia2[i]),4)
+        medtcan.append(media1)
+    for i in range(1,alt+1):
+        media1=round(((medtcan[0]+medtcan[i])/2),4)
+        medtcan.append(media1)
+
+    #S1
+    c=[];b=[];e=[];f=[];g=[];h=[];menor=max(peso)
+    while contador<1:
+        c=[];b=[];e=[];f=[];g=[];h=[];x=0;y=0;w=0;z=0;v=0;t=0;rs1=[];rs1o=[];
+        if contador!=0:
+            menor=max(peso2)
+            for j in range(cri):
+                if peso2[j]<menor and peso2.index(menor) not in peso3 and peso2[j]>0:
+                    menor=peso2[j]
+            peso3.append(peso2.index(menor))
+            peso2[peso2.index(menor)]=0
+            peso[peso3[contador-1]]=0
+        for i in range(alt):
+            for j in range(alt):
+                if(i<j):
+                    for k in range(cri):
+                        x=Utils.compara(matriz[i][k],matriz[j][k], p,q,k)
+                        y=Utils.dif(matriz[i][k],matriz[j][k])
+                        w=Utils.compara(matriz[j][k],matriz[i][k], p,q,k)
+                        z=Utils.dif(matriz[j][k],matriz[i][k])
+                        v=Utils.ind(pertinencia[k],pertinencia2[i][k],pertinencia2[j][k])
+                        t=Utils.ind(pertinencia[k],pertinencia2[j][k],pertinencia2[i][k])
+                        b.append(y)
+                        c.append(x)
+                        e.append(w)
+                        f.append(z)
+                        g.append(v)
+                        h.append(t)
+                    if(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
+                        check1 = Utils.discordancias1(b,c,g,d,peso, cri)
+                        check2 = Utils.discordancias1(f,e,h,d,peso, cri)
+                        if(check1==0.5) or (check2==0.5):
+                            matrizs1[i][j]=0.5
+                            matrizs1[j][i]=0.5
+                        else:
+                            matrizs1[i][j]=round(Utils.discordancias1(b,c,g,d,peso, cri),3)
+                            matrizs1[j][i]=round(Utils.discordancias1(f,e,h,d,peso, cri),3)
+                    elif(Utils.s1(c,b,g, peso, cri)=="domina") and (Utils.s1(e,f,h, peso, cri)!="domina"):
+                        ms1 = Utils.discordancias1(b,c,g,d,peso, cri)
+                        if(ms1 !=0.5):
+                            matrizs1[i][j]=round(ms1,3)
+                            matrizs1[j][i]=0
+                        else:
+                            matrizs1[i][j]=0.5
+                            matrizs1[j][i]=0.5
+                    elif(Utils.s1(c,b,g,peso, cri)!="domina") and (Utils.s1(e,f,h, peso, cri)=="domina"):
+                        ms1 = Utils.discordancias1(f,e,h,d,peso, cri)
+                        if(ms1!=0.5):
+                            matrizs1[i][j]=0
+                            matrizs1[j][i]=round(ms1,3)
+                        else:
+                            matrizs1[i][j]=0.5
+                            matrizs1[j][i]=matrizs1[i][j]
+                    else:
+                        matrizs1[i][j]=0.5
+                        matrizs1[j][i]=matrizs1[i][j]
+                    c=[];b=[];e=[];f=[]
+        for i in range(alt):
+            r1=0.0
+            for j in range(alt):
+                r1+=matrizs1[i][j]
+            rs1.append(round(r1,3))
+        for i in range(len(rs1)):
+            rs1o.append(rs1[i])
+        rs1o.sort()
+        rs1o.reverse()
+        for i in range (alt):
+            for j in range (alt):
+                if rs1o[i]==rs1[j]:
+                    if alternativas[j] in alternativaso:
+                        "nada"
+                    else:
+                        alternativaso.append(alternativas[j])
+        for i in range(alt):
+            if(i!=alt-1):
+                if rs1o[i]>rs1o[i+1]:
+                    alternativaso.insert(2*i+1,">")
+                    if contador==0:
+                        originals1.append(alternativaso[2*i])
+                        originals1.append(">")
+                elif rs1o[i]==rs1o[i+1]:
+                    alternativaso.insert(2*i+1,"=")
+                    if contador==0:
+                        originals1.append(alternativaso[2*i])
+                        originals1.append("=")
+            else:
+                if contador==0:
+                    originals1.append(alternativaso[2*i])
+        if contador==0:
+            input_rows = [[alternativas[row]]+["-"]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
+            bottom = [[alternativas[row]]+["= "]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
+            ordem = [[alternativaso[col] for col in range(len(alternativaso))]+[" - Original."] for row in range(1)]
+            s1 = Result()
+            s1.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+            s1.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
+            s1.original = " ".join(ordem[0])
+            thor.result.append(s1)
+        alternativaso=[]
+        tca1=0
+        ver1=0
+        contador+=1
+    contador=0;peso3=[]
+    for i in range(cri):
+        peso[i]=peso4[i]
+        peso2[i]=peso4[i]
+    #S2
+    while contador<1:
+        c=[];b=[];e=[];f=[];g=[];h=[];x=0;y=0;w=0;z=0;v=0;t=0;rs2=[];rs2o=[]
+        if contador!=0:
+            menor=max(peso2)
+            for j in range(cri):
+                if peso2[j]<menor and peso2.index(menor) not in peso3 and peso2[j]>0:
+                    menor=peso2[j]
+            peso3.append(peso2.index(menor))
+            peso2[peso2.index(menor)]=0
+            peso[peso3[contador-1]]=0
+        for i in range(alt):
+            for j in range(alt):
+                if(i<j):
+                    for k in range(cri):
+                        x=Utils.compara(matriz[i][k],matriz[j][k],p,q,k)
+                        y=Utils.dif(matriz[i][k],matriz[j][k])
+                        w=Utils.compara(matriz[j][k],matriz[i][k],p,q,k)
+                        z=Utils.dif(matriz[j][k],matriz[i][k])
+                        v=Utils.ind(pertinencia[k],pertinencia2[i][k],pertinencia2[j][k])
+                        t=Utils.ind(pertinencia[k],pertinencia2[j][k],pertinencia2[i][k])
+                        b.append(y)
+                        c.append(x)
+                        e.append(w)
+                        f.append(z)
+                        g.append(v)
+                        h.append(t)
+                    if(Utils.s2(c,b,g,peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
+                        check1 = Utils.discordancias2(b,c,g, d, peso, cri)
+                        check2 = Utils.discordancias2(f,e,h,d,peso, cri)
+                        if(check1==0.5) or (check2==0.5):
+                            matrizs2[i][j]=0.5
+                            matrizs2[j][i]=0.5
+                        else:
+                            matrizs2[i][j]=round(Utils.discordancias2(b,c,g,d,peso, cri),3)
+                            matrizs2[j][i]=round(Utils.discordancias2(f,e,h, d,peso, cri),3)
+                    elif(Utils.s2(c,b,g, peso, cri)=="domina") and (Utils.s2(e,f,h, peso, cri)!="domina"):
+                        ms2 = Utils.discordancias2(b,c,g, d, peso, cri)
+                        if(ms2!=0.5):
+                            matrizs2[i][j]=round(ms2,3)
+                            matrizs2[j][i]=0
+                        else:
+                            matrizs2[i][j]=0.5
+                            matrizs2[j][i]=0.5
+                    elif(Utils.s2(c,b,g, peso, cri)!="domina") and (Utils.s2(e,f,h, peso, cri)=="domina"):
+                        ms2 = Utils.discordancias2(f,e,h, d,peso, cri)
+                        if(ms2!=0.5):
+                            matrizs2[i][j]=0
+                            matrizs2[j][i]=round(ms2,3)
+                        else:
+                            matrizs2[i][j]=0.5
+                            matrizs2[j][i]=matrizs2[i][j]
+                    else:
+                        matrizs2[i][j]=0.5
+                        matrizs2[j][i]=matrizs2[i][j]
+                    c=[];b=[];e=[];f=[]
+        for i in range(alt):
+            r2=0.0
+            for j in range(alt):
+                r2+=matrizs2[i][j]
+            rs2.append(round(r2,3))
+        for i in range(len(rs2)):
+            rs2o.append(rs2[i])
+        rs2o.sort()
+        rs2o.reverse()
+        for i in range (alt):
+            for j in range (alt):
+                if rs2o[i]==rs2[j]:
+                    if alternativas[j] in alternativaso:
+                        "nada"
+                    else:
+                        alternativaso.append(alternativas[j])
+        for i in range(alt):
+            if(i!=alt-1):
+                if rs2o[i]>rs2o[i+1]:
+                    alternativaso.insert(2*i+1,">")
+                    if contador==0:
+                        originals2.append(alternativaso[2*i])
+                        originals2.append(">")
+                elif rs2o[i]==rs2o[i+1]:
+                    alternativaso.insert(2*i+1,"=")
+                    if contador==0:
+                        originals2.append(alternativaso[2*i])
+                        originals2.append("=")
+            else:
+                if contador==0:
+                    originals2.append(alternativaso[2*i])
+        if contador==0:
+            input_rows = [[str(alternativas[row])]+["-"]+[str(matrizs2[row][col]) for col in range(alt)] for row in range(alt)]
+            bottom = [[str(alternativas[row])]+["= "]+[str(rs2[row]) for col in range(1)] for row in range(alt)]
+            ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[" - Original."] for row in range(1)]
+            s2 = Result()
+            s2.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+            s2.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
+            s2.original = " ".join(ordem[0])
+            thor.result.append(s2)
+        alternativaso=[]
+        tca2=0
+        ver2=0
+        contador+=1
+    contador=0;peso3=[]
+    for i in range(cri):
+        peso[i]=peso4[i]
+        peso2[i]=peso4[i]
+    #S3
+    while contador<1:
+        c=[];b=[];e=[];f=[];g=[];h=[];x=0;y=0;w=0;z=0;v=0;t=0;rs3=[];rs3o=[]
+        if contador!=0:
+            menor=max(peso2)
+            for j in range(cri):
+                if peso2[j]<menor and peso2.index(menor) not in peso3 and peso2[j]>0:
+                    menor=peso2[j]
+            peso3.append(peso2.index(menor))
+            peso2[peso2.index(menor)]=0
+            peso[peso3[contador-1]]=0
+        for i in range(alt):
+            for j in range(alt):
+                if(i<j):
+                    for k in range(cri):
+                        x=Utils.compara(matriz[i][k],matriz[j][k], p,q,k)
+                        y=Utils.dif(matriz[i][k],matriz[j][k])
+                        w=Utils.compara(matriz[j][k],matriz[i][k], p,q,k)
+                        z=Utils.dif(matriz[j][k],matriz[i][k])
+                        v=Utils.ind(pertinencia[k],pertinencia2[i][k],pertinencia2[j][k])
+                        t=Utils.ind(pertinencia[k],pertinencia2[j][k],pertinencia2[i][k])
+                        b.append(y)
+                        c.append(x)
+                        e.append(w)
+                        f.append(z)
+                        g.append(v)
+                        h.append(t)
+                    if(Utils.s3(c,b,g, peso,cri)=="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
+                        check1 = Utils.discordancias3(b,c,g,d,peso, cri)
+                        check2 = Utils.discordancias3(f,e,h,d,peso, cri)
+                        if(check1==0.5) or (check2==0.5):
+                            matrizs3[i][j]=0.5
+                            matrizs3[j][i]=0.5
+                        else:
+                            matrizs3[i][j]=round(Utils.discordancias3(b,c,g,d,peso, cri),3)
+                            matrizs3[j][i]=round(Utils.discordancias3(f,e,h, d,peso, cri),3)
+                    elif(Utils.s3(c,b,g, peso, cri)=="domina") and (Utils.s3(e,f,h, peso, cri)!="domina"):
+                        ms3 = Utils.discordancias3(b,c,g)
+                        if(ms3!=0.5):
+                            matrizs3[i][j]=round(ms3,3)
+                            matrizs3[j][i]=0
+                        else:
+                            matrizs3[i][j]=0.5
+                            matrizs3[j][i]=0.5
+                    elif(Utils.s3(c,b,g,peso,cri)!="domina") and (Utils.s3(e,f,h, peso, cri)=="domina"):
+                        ms3 = Utils.discordancias3(f,e,h, d,peso, cri)
+                        if(ms3!=0.5):
+                            matrizs3[i][j]=0
+                            matrizs3[j][i]=round(ms3,3)
+                        else:
+                            matrizs3[i][j]=0.5
+                            matrizs3[j][i]=matrizs3[i][j]
+                    else:
+                        matrizs3[i][j]=0.5
+                        matrizs3[j][i]=matrizs3[i][j]
+                    c=[];b=[];e=[];f=[]
+        for i in range(alt):
+            r3=0.0
+            for j in range(alt):
+                r3+=matrizs3[i][j]
+            rs3.append(round(r3,3))
+        for i in range(len(rs3)):
+            rs3o.append(rs3[i])
+        rs3o.sort()
+        rs3o.reverse()
+        for i in range (alt):
+            for j in range (alt):
+                if rs3o[i]==rs3[j]:
+                    if alternativas[j] in alternativaso:
+                        "nada"
+                    else:
+                        alternativaso.append(alternativas[j])
+        for i in range(alt):
+            if(i!=alt-1):
+                if rs3o[i]>rs3o[i+1]:
+                    alternativaso.insert(2*i+1,">")
+                    if contador==0:
+                        originals3.append(alternativaso[2*i])
+                        originals3.append(">")
+                elif rs3o[i]==rs3o[i+1]:
+                    alternativaso.insert(2*i+1,"=")
+                    if contador==0:
+                        originals3.append(alternativaso[2*i])
+                        originals3.append("=")
+            else:
+                if contador==0:
+                    originals3.append(alternativaso[2*i])
+        if contador==0:
+            input_rows = [[str(alternativas[row])]+["-"]+[str(matrizs3[row][col]) for col in range(alt)] for row in range(alt)]
+            bottom = [[str(alternativas[row])]+["= "]+[str(rs3[row]) for col in range(1)] for row in range(alt)]
+            ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[" - Original."] for row in range(1)]
+            s3 = Result()
+            s3.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+            s3.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
+            s3.original = " ".join(ordem[0])
+            thor.result.append(s3)
+            alternativaso=[]
+        tca3=0
+        ver3=0
+        contador+=1
     return '    '

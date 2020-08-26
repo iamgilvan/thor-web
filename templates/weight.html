@@ -1,0 +1,54 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<form action="{{ url_for('matrix') }}" method="POST">
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">What assignment method do you want to use?</label>
+    </div>
+    <select id="selectBox" name="assignment" onchange="javascript:changeAssignment();" class="custom-select" id="inputGroupSelect01" required>
+      <option selected value="1">Direct Assignment</option>
+      <option value="2">Reason Scale</option>
+      <option value="3">Interval Scale</option>
+    </select>
+</div>
+<!-- 
+{% for decisor in decisors %}
+{% set first_index = loop.index %}
+<tr>
+    <th scope="row">Decisor {{ loop.index }} W:</th>
+    {% for criteria in criterias %}
+    {% set second_index = loop.index %}
+        <td scope="col">
+            <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+        </td>
+    {% endfor %}
+</tr>
+{% endfor %} -->
+
+<table id="weight" class="table" style="display:block">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Direct Assignment</th>
+        {% for criteria in criterias %}
+            <th scope="col">{{ criteria }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+        {% for decisor in decisors %}
+        {% set first_index = loop.index %}
+        <tr>
+            <th scope="row">Decisor {{ loop.index }} W:</th>
+            {% for criteria in criterias %}
+            {% set second_index = loop.index %}
+                <td scope="col">
+                    <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "buttons.html" %}
+</form>
+{% endblock %}

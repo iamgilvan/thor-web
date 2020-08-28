@@ -22,3 +22,11 @@ function changeAssignment(){
         document.getElementById("weight").style.display = 'none';
     }
 }
+
+function showTca(){
+    if (document.getElementById('yesnebulosa').checked) {
+        document.getElementById("tcan").style.display = 'block';
+    }else{
+        document.getElementById("tcan").style.display = 'none';
+    }
+}

@@ -14,6 +14,9 @@ class Thor:
         self.tca_s1_citerio_removed = ""
         self.tca_s2_citerio_removed = ""
         self.tca_s3_citerio_removed = ""
+        self.removedTcaN = ""
+        self.result_tca_n = []
+        self.usartca = False
 
 class Result:
     def __init__(self):
@@ -24,8 +27,18 @@ class Result:
 class ResultTca:
     def __init__(self):
         self.title = ""
-        self.subtitle = ""
+        self.sub_title = ""
         self.S_result = []
         self.somatorio = []
         self.original = ""
         self.original2 = ""
+
+class TcaNebulosa:
+    def __init__(self):
+        self.title =""
+        self.head = []
+        self.input_rows = []
+        self.medias = []
+        self.mediaalt = []
+        self.mediamedias =[]
+        self.removed = ""

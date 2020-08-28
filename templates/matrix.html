@@ -52,7 +52,7 @@
         </tbody>
     </table>
 
-    <p>Do you want use pertinence</p>
+    <p>Do you want to use pertinence</p>
     <div class="form-check form-check-inline">
         <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="0" id="noCheck" checked>
         <label class="form-check-label" for="inlineRadio1">
@@ -109,19 +109,20 @@
             {% endfor %}
         </tbody>
     </table>
-      <p>Do you want use tca?</p>
+      <p>Do you want to use tca?</p>
       <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="tca" value="0" id="noCheck" checked>
+          <input class="form-check-input" type="radio" name="tca" value="0" id="noYesTcaCheck" checked>
           <label class="form-check-label" for="inlineRadio1">
             No
           </label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="tca" value="1" id="yesCheck">
+          <input class="form-check-input" type="radio" name="tca" value="1" id="yesTcaCheck">
           <label class="form-check-label" for="inlineRadio2">
             Yes
           </label>
         </div>
+
     {% include "buttons.html" %}
 </form>
 {% endblock %}

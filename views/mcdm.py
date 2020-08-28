@@ -76,7 +76,6 @@ def result():
     criterios = thor.criterias
     alt = len(thor.alternatives)
     alternativas = thor.alternatives
-    #peso = [ 0 for i in range(cri)]
     peso2 = [ 0 for i in range(cri)]
     peso4 = [ 0 for i in range(cri)]
     for a in range(alt):
@@ -95,7 +94,6 @@ def result():
             linha.append(0)
         matrizs3.append(linha)
 
-    #pesofim = []
     peso = thor.peso
     pesofim = thor.pesofim
 
@@ -125,17 +123,18 @@ def result():
         pertinencia2tca.append(linha)
     user_pertinence = True if request.form['pertinence'] == '1' else False
     usartca = 0 if request.form['tca'] == '1' else 1
-
+    thor.user_pertinence = user_pertinence
+    thor.usartca = True if usartca == 0 else False
     if user_pertinence:
         #pegado os pesos da matriz de pertinencia
-        for i in range(cri):
+        for i in range(1, cri+1):
             pertinencia.append(float(request.form[f'value-matrix-c-{i}']))
             pertinenciatca.append(float(request.form[f'value-matrix-c-{i}']))
         #pegado a matriz de pertinencia
-        for i in range(alt):
-          for j in range(cri):
-            pertinencia2[i][j]=float(request.form[f'value-matrix-p-{i}-{j}'])
-            pertinencia2tca[i][j]=float(request.form[f'value-matrix-p-{i}-{j}'])
+        for i in range(1, alt+1):
+          for j in range(1, cri+1):
+            pertinencia2[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
+            pertinencia2tca[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
     else:
         for i in range(cri):
             pertinencia.append(1)
@@ -362,7 +361,7 @@ def result():
                                 matrizs2[i][j]=round(Utils.discordancias2T2(b,c,g,d,p, q, peso, cri),3)
                                 matrizs2[j][i]=round(Utils.discordancias2T2(f,e,h,d,p, q, peso, cri),3)
                         elif(Utils.s2T2(c,b,g,p,q,peso,cri)=="domina") and (Utils.s2T2(e,f,h, p,q,peso,cri)!="domina"):
-                            ms2 = Utils.discordancias2T2(b,c,g, d, peso, cri)
+                            ms2 = Utils.discordancias2T2(b,c,g, d,p,q, peso, cri)
                             if(ms2!=0.5):
                                 matrizs2[i][j]=round(ms2,3)
                                 matrizs2[j][i]=0
@@ -700,7 +699,7 @@ def result():
                 result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
                 result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
                 result.original = " ".join(ordem[0])
-                result.original2 = " ".join(ordem[0])
+                result.original2 = " ".join(ordem2[0])
                 thor.result_tca_s1.append(result)
             if contador!=0 and usartca!=1:
                 for i in range(len(alternativaso)):
@@ -724,7 +723,8 @@ def result():
             else:
                 ordem = [[str(cris1[row]) for col in range(1)] for row in range(len(cris1))]
                 c = [" - ".join(ordem[i]) for i in range(len(ordem))]
-                thor.tca_s1_citerio_removed = "Criteria can be removed :" + " - ".join(c)
+                c = " - ".join(c)
+                thor.tca_s1_citerio_removed = "Criteria can be removed : " + c
         contador=1;peso3=[]
         for i in range(cri):
             peso[i]=peso4[i]
@@ -797,7 +797,7 @@ def result():
                                     matrizs2[i][j]=round(Utils.discordancias2T2(b,c,g,d,p, q, peso, cri),3)
                                     matrizs2[j][i]=round(Utils.discordancias2T2(f,e,h,d,p, q, peso, cri),3)
                             elif(Utils.s2T2(c,b,g,p,q,peso,cri)=="domina") and (Utils.s2T2(e,f,h, p,q,peso,cri)!="domina"):
-                                ms2 = Utils.discordancias2T2(b,c,g, d, peso, cri)
+                                ms2 = Utils.discordancias2T2(b,c,g, d,p,q, peso, cri)
                                 if(ms2!=0.5):
                                     matrizs2[i][j]=round(ms2,3)
                                     matrizs2[j][i]=0
@@ -848,8 +848,8 @@ def result():
                     if contador==0:
                         originals2.append(alternativaso[2*i])
             if contador==0:
-                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
-                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
+                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs2[row][col]) for col in range(alt)] for row in range(alt)]
+                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs2[row]) for col in range(1)] for row in range(alt)]
                 ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Original.")] for row in range(1)]
                 layout = input_rows + bottom + ordem
                 #window = sg.Window('Resultados de S2', layout, font='Courier 12')
@@ -857,14 +857,14 @@ def result():
                 result = ResultTca()
                 result.sub_title = f'Criteria analyzed {criterios[peso3[contador-1]]}'
                 result.title = 'S2 result'
-                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
-                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
+                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs2[row][col]) for col in range(alt)] for row in range(alt)]
+                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs2[row]) for col in range(1)] for row in range(alt)]
                 ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
-                ordem2 = [[str(originals1[col]) for col in range(len(originals1))]+[str(" - Original.")] for row in range(1)]
+                ordem2 = [[str(originals2[col]) for col in range(len(originals2))]+[str(" - Original.")] for row in range(1)]
                 result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
                 result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
                 result.original = " ".join(ordem[0])
-                result.original2 = " ".join(ordem[0])
+                result.original2 = " ".join(ordem2[0])
                 thor.result_tca_s2.append(result)
             if contador!=0 and usartca!=1:
                 for i in range(len(alternativaso)):
@@ -886,7 +886,7 @@ def result():
             if len(cris2)==0:
                thor.tca_s2_citerio_removed = "No criteria can be removed"
             else:
-                ordem = [[str(cris1[row]) for col in range(1)] for row in range(len(cris1))]
+                ordem = [[str(cris2[row]) for col in range(1)] for row in range(len(cris2))]
                 c = [" - ".join(ordem[i]) for i in range(len(ordem))]
                 thor.tca_s2_citerio_removed = "Criteria can be removed :" + " - ".join(c)
         contador=1;peso3=[]
@@ -979,79 +979,133 @@ def result():
                             else:
                                 matrizs3[i][j]=0.5
                                 matrizs3[j][i]=matrizs3[i][j]
-                    c=[];b=[];e=[];f=[]
-        for i in range(alt):
-            r3=0.0
-            for j in range(alt):
-                r3+=matrizs3[i][j]
-            rs3.append(round(r3,3))
-        for i in range(len(rs3)):
-            rs3o.append(rs3[i])
-        rs3o.sort()
-        rs3o.reverse()
-        for i in range (alt):
-            for j in range (alt):
-                if rs3o[i]==rs3[j]:
-                    if alternativas[j] in alternativaso:
-                        "nada"
-                    else:
-                        alternativaso.append(alternativas[j])
-        for i in range(alt):
-            if(i!=alt-1):
-                if rs3o[i]>rs3o[i+1]:
-                    alternativaso.insert(2*i+1,">")
+                        c=[];b=[];e=[];f=[]
+            for i in range(alt):
+                r3=0.0
+                for j in range(alt):
+                    r3+=matrizs3[i][j]
+                rs3.append(round(r3,3))
+            for i in range(len(rs3)):
+                rs3o.append(rs3[i])
+            rs3o.sort()
+            rs3o.reverse()
+            for i in range (alt):
+                for j in range (alt):
+                    if rs3o[i]==rs3[j]:
+                        if alternativas[j] in alternativaso:
+                            "nada"
+                        else:
+                            alternativaso.append(alternativas[j])
+            for i in range(alt):
+                if(i!=alt-1):
+                    if rs3o[i]>rs3o[i+1]:
+                        alternativaso.insert(2*i+1,">")
+                        if contador==0:
+                            originals3.append(alternativaso[2*i])
+                            originals3.append(">")
+                    elif rs3o[i]==rs3o[i+1]:
+                        alternativaso.insert(2*i+1,"=")
+                        if contador==0:
+                            originals3.append(alternativaso[2*i])
+                            originals3.append("=")
+                else:
                     if contador==0:
                         originals3.append(alternativaso[2*i])
-                        originals3.append(">")
-                elif rs3o[i]==rs3o[i+1]:
-                    alternativaso.insert(2*i+1,"=")
-                    if contador==0:
-                        originals3.append(alternativaso[2*i])
-                        originals3.append("=")
+            if contador==0:
+                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs3[row][col]) for col in range(alt)] for row in range(alt)]
+                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs3[row]) for col in range(1)] for row in range(alt)]
+                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Original.")] for row in range(1)]
+                layout = input_rows + bottom + ordem
+                #window = sg.Window('Resultados de S3', layout, font='Courier 12')
+            elif contador!=0 and usartca!=1:
+                result = ResultTca()
+                result.sub_title = f'Criteria analyzed {criterios[peso3[contador-1]]}'
+                result.title = 'S3 result'
+                input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs3[row][col]) for col in range(alt)] for row in range(alt)]
+                bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs3[row]) for col in range(1)] for row in range(alt)]
+                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
+                ordem2 = [[str(originals3[col]) for col in range(len(originals3))]+[str(" - Original.")] for row in range(1)]
+                result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+                result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
+                result.original = " ".join(ordem[0])
+                result.original2 = " ".join(ordem2[0])
+                thor.result_tca_s3.append(result)
+            if contador!=0 and usartca!=1:
+                for i in range(len(alternativaso)):
+                    if alternativaso[i]==originals3[i]:
+                        tca3+=1
+                if (tca3==len(alternativaso)):
+                    cris3.append(criterios[peso3[contador-1]])
+                    if (criterios[peso3[contador-1]]) not in cristotal:
+                        cristotal.append(criterios[peso3[contador-1]])
+                    ver3=1
+            if contador!=0 and usartca!=1:
+                if ver3!=1:
+                    peso[peso3[contador-1]]=peso4[peso3[contador-1]]
+            alternativaso=[]
+            tca3=0
+            ver3=0
+            contador+=1
+        if usartca!=1:
+            if len(cris3)==0:
+                thor.tca_s3_citerio_removed = "No criteria can be removed"
             else:
-                if contador==0:
-                    originals3.append(alternativaso[2*i])
-        if contador==0:
-            input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
-            bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
-            ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Original.")] for row in range(1)]
-            layout = input_rows + bottom + ordem
-            #window = sg.Window('Resultados de S3', layout, font='Courier 12')
-        elif contador!=0 and usartca!=1:
-            result = ResultTca()
-            result.sub_title = f'Criteria analyzed {criterios[peso3[contador-1]]}'
-            result.title = 'S3 result'
-            input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
-            bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
-            ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
-            ordem2 = [[str(originals1[col]) for col in range(len(originals1))]+[str(" - Original.")] for row in range(1)]
-            result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
-            result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
-            result.original = " ".join(ordem[0])
-            result.original2 = " ".join(ordem[0])
-            thor.result_tca_s3.append(result)
-        if contador!=0 and usartca!=1:
-            for i in range(len(alternativaso)):
-                if alternativaso[i]==originals3[i]:
-                    tca3+=1
-            if (tca3==len(alternativaso)):
-                cris3.append(criterios[peso3[contador-1]])
-                if (criterios[peso3[contador-1]]) not in cristotal:
-                    cristotal.append(criterios[peso3[contador-1]])
-                ver3=1
-        if contador!=0 and usartca!=1:
-            if ver3!=1:
-                peso[peso3[contador-1]]=peso4[peso3[contador-1]]
-        alternativaso=[]
-        tca3=0
-        ver3=0
-        contador+=1
-    if usartca!=1:
-        if len(cris3)==0:
-            thor.tca_s3_citerio_removed = "No criteria can be removed"
+                ordem = [[str(cris3[row]) for col in range(1)] for row in range(len(cris3))]
+                c = [" - ".join(ordem[i]) for i in range(len(ordem))]
+                thor.tca_s3_citerio_removed = "Criteria can be removed :" + " - ".join(c)
+    if thor.usartca and thor.user_pertinence:
+        tcan = TcaNebulosa()
+        head = [["Pesos - "]+[str(pertinencia[col]) for col in range(cri)]]
+        input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(cri)] for row in range(alt)]
+        medias = [["Média de pesos:"]+[str(medtcan[0])]]
+        mediaalt = [["Média de"]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1]) for col in range(1)] for row in range(alt)]
+        mediamedias = [["Média de pesos com"]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1+alt])for col in range(1)] for row in range(alt)]
+        tcan.head = [" ".join(head[i]) for i in range(len(head))]
+        tcan.input_rows = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+        tcan.medias = [" ".join(medias[i]) for i in range(len(medias))]
+        tcan.mediamedias = [" ".join(mediamedias[i]) for i in range(len(mediamedias))]
+        tcan.mediaalt = [" ".join(mediaalt[i]) for i in range(len(mediaalt))]
+        for i in range(len(cristotal)):
+            neb=0;rtcan=[];rt2=[]
+            pos=criterios.index(cristotal[i])
+            pertinencia.pop(pos)
+            z=round(Utils.media(pertinencia),4)
+            rtcan.append(z)
+            for k in range(alt):
+                pertinencia2[k].pop(pos)
+                z=round(Utils.media(pertinencia2[k]),4)
+                rtcan.append(z)
+                z=round(((rtcan[k+1]+rtcan[0])/2),4)
+                rt2.append(z)
+            tcanCalc = TcaNebulosa()
+            header =  [['   Retirando critério']+[str(cristotal[i])]]
+            head = [["Pesos - "]+[str(pertinencia[col]) for col in range(len(pertinencia))]]
+            input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(len(pertinencia))] for row in range(alt)]
+            medias = [["Média de pesos:"]+[str(rtcan[0])]]
+            mediaalt = [["Média de"]+[str(alternativas[row])]+["-"]+[str(rtcan[row+1]) for col in range(1)] for row in range(alt)]
+            mediamedias = [["Média de pesos com"]+[str(alternativas[row])]+["-"]+[str(rt2[row])for col in range(1)] for row in range(alt)]
+
+            tcanCalc.head = [" ".join(head[i]) for i in range(len(head))]
+            tcanCalc.input_rows = [" ".join(input_rows[i]) for i in range(len(input_rows))]
+            tcanCalc.medias = [" ".join(medias[i]) for i in range(len(medias))]
+            tcanCalc.mediamedias = [" ".join(mediamedias[i]) for i in range(len(mediamedias))]
+            tcanCalc.mediaalt = [" ".join(mediaalt[i]) for i in range(len(mediaalt))]
+            thor.result_tca_n.append(tcanCalc)
+            for k in range(alt):
+                pertinencia2[k].insert(pos,pertinencia2tca[k][pos])
+            pertinencia.insert(pos,pertinenciatca[pos])
+            for j in range(len(rt2)):
+                rtcan.append(rt2[j])
+            for j in range(len(rtcan)):
+                if rtcan[j]>medtcan[j]:
+                    neb+=1
+            if neb==len(rtcan):
+                tcaneb.append(cristotal[i])
+        if len(tcaneb)==0:
+            thor.removedTcaN = "By TCA nebulosa no criteria can be removed"
         else:
-            ordem = [[str(cris1[row]) for col in range(1)] for row in range(len(cris1))]
-            c = [" - ".join(ordem[i]) for i in range(len(ordem))]
-            thor.tca_s3_citerio_removed = "Criteria can be removed :" + " - ".join(c)
-    #session['thor'] = json.dumps(thor.__dict__)
-    return render_template('result.html', title="Result", thor=thor)
+            head = [[str(tcaneb[row]) for col in range(1)] for row in range(len(tcaneb))]
+            n = [" - ".join(head[i]) for i in range(len(head))]
+            thor.removedTcaN = "By tca nebulosa criteria can be removed : " + " - ".join(n)
+        #session['tcan'] = json.dumps(tcan.__dict__)
+    return render_template('result.html', title="Result", thor=thor, tcan=tcan)

@@ -2,10 +2,15 @@ from flask import render_template, request, redirect, session
 from app import app
 from models.thor import *
 from utils.utils import *
-from utils.payload import *
+#from utils.payload import *
 import json
 from collections import namedtuple
 
+import json
+
+class Payload(object):
+     def __init__(self, j):
+         self.__dict__ = json.loads(j)
 
 @app.route('/start')
 def start():
@@ -17,11 +22,7 @@ def start():
 
 @app.route('/main',  methods=['GET', 'POST',])
 def main():
-    #thor = Payload(session.get('thor', None))
-    print(session.get('thor', None))
-    # if thor is None:
-    #     print("ESTOOOOOU NOOOOONNEEEEEE")
-    return render_template('home.html', title='Thor Web')
+    thor = Payload(session.get('thor', None))
     thor.alternatives = [None] * int(request.form['alternative'])
     thor.decisors = [None] * int(request.form['decisor'])
     thor.criterias = [None] * int(request.form['criteria'])

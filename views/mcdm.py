@@ -17,7 +17,11 @@ def start():
 
 @app.route('/main',  methods=['GET', 'POST',])
 def main():
-    thor = Payload(session.get('thor', None))
+    #thor = Payload(session.get('thor', None))
+    print(session.get('thor', None))
+    # if thor is None:
+    #     print("ESTOOOOOU NOOOOONNEEEEEE")
+    return render_template('home.html', title='Thor Web')
     thor.alternatives = [None] * int(request.form['alternative'])
     thor.decisors = [None] * int(request.form['decisor'])
     thor.criterias = [None] * int(request.form['criteria'])
@@ -39,10 +43,6 @@ def weight():
 @app.route('/matrix', methods=['POST'])
 def matrix():
     thor = Payload(session.get('thor', None))
-    
-    if thor is None:
-        print("ESTOOOOOU NOOOOONNEEEEEE")
-        return render_template('home.html', title='Thor Web')
     assignment_method_selected = request.form['assignment']
     pesofim =[]
     cri = len(thor.criterias)

@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('result') }}" method="POST">
+<form action="{{ url_for('result') }}" onSubmit="return checkForm()" method="POST">
     <h6><b>Please let me know the main infos</b></h6>
 
     <table class="table">
@@ -29,7 +29,7 @@
                 <th scope="row">P </th>
                 {% for criteria in criterias %}
                     <td scope="col">
-                        <input type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                        <input id="p" type="number" lang="en-US" min="0" step="any" name="value-p-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
                     </td>
                 {% endfor %}
             </tr>
@@ -37,7 +37,7 @@
                 <th scope="row">Q </th>
                 {% for criteria in criterias %}
                     <td scope="col">
-                        <input type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                        <input id="q"    type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
                     </td>
                 {% endfor %}
             </tr>

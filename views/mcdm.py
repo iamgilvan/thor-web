@@ -1015,8 +1015,6 @@ def result():
                 input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs3[row][col]) for col in range(alt)] for row in range(alt)]
                 bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs3[row]) for col in range(1)] for row in range(alt)]
                 ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Original.")] for row in range(1)]
-                layout = input_rows + bottom + ordem
-                #window = sg.Window('Resultados de S3', layout, font='Courier 12')
             elif contador!=0 and usartca!=1:
                 result = ResultTca()
                 result.sub_title = f'Criteria analyzed {criterios[peso3[contador-1]]}'
@@ -1055,11 +1053,11 @@ def result():
                 thor.tca_s3_citerio_removed = "Criteria can be removed :" + " - ".join(c)
     if thor.usartca and thor.user_pertinence:
         tcan = TcaNebulosa()
-        head = [["Pesos - "]+[str(pertinencia[col]) for col in range(cri)]]
+        head = [["Weights - "]+[str(pertinencia[col]) for col in range(cri)]]
         input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(cri)] for row in range(alt)]
-        medias = [["Média de pesos:"]+[str(medtcan[0])]]
-        mediaalt = [["Média de"]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1]) for col in range(1)] for row in range(alt)]
-        mediamedias = [["Média de pesos com"]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1+alt])for col in range(1)] for row in range(alt)]
+        medias = [["Average of weights :"]+[str(medtcan[0])]]
+        mediaalt = [["Average of "]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1]) for col in range(1)] for row in range(alt)]
+        mediamedias = [["Average of weights with"]+[str(alternativas[row])]+["-"]+[str(medtcan[row+1+alt])for col in range(1)] for row in range(alt)]
         tcan.head = [" ".join(head[i]) for i in range(len(head))]
         tcan.input_rows = [" ".join(input_rows[i]) for i in range(len(input_rows))]
         tcan.medias = [" ".join(medias[i]) for i in range(len(medias))]
@@ -1078,13 +1076,14 @@ def result():
                 z=round(((rtcan[k+1]+rtcan[0])/2),4)
                 rt2.append(z)
             tcanCalc = TcaNebulosa()
-            header =  [['   Retirando critério']+[str(cristotal[i])]]
-            head = [["Pesos - "]+[str(pertinencia[col]) for col in range(len(pertinencia))]]
+            header =  [['Removing criteria']+[str(cristotal[i])]]
+            head = [["Weights - "]+[str(pertinencia[col]) for col in range(len(pertinencia))]]
             input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(len(pertinencia))] for row in range(alt)]
-            medias = [["Média de pesos:"]+[str(rtcan[0])]]
-            mediaalt = [["Média de"]+[str(alternativas[row])]+["-"]+[str(rtcan[row+1]) for col in range(1)] for row in range(alt)]
-            mediamedias = [["Média de pesos com"]+[str(alternativas[row])]+["-"]+[str(rt2[row])for col in range(1)] for row in range(alt)]
+            medias = [["Average of weights :"]+[str(rtcan[0])]]
+            mediaalt = [["Average of "]+[str(alternativas[row])]+["-"]+[str(rtcan[row+1]) for col in range(1)] for row in range(alt)]
+            mediamedias = [["Average of weights with"]+[str(alternativas[row])]+["-"]+[str(rt2[row])for col in range(1)] for row in range(alt)]
 
+            tcanCalc.title =[" ".join(header[i]) for i in range(len(header))]
             tcanCalc.head = [" ".join(head[i]) for i in range(len(head))]
             tcanCalc.input_rows = [" ".join(input_rows[i]) for i in range(len(input_rows))]
             tcanCalc.medias = [" ".join(medias[i]) for i in range(len(medias))]
@@ -1107,5 +1106,5 @@ def result():
             head = [[str(tcaneb[row]) for col in range(1)] for row in range(len(tcaneb))]
             n = [" - ".join(head[i]) for i in range(len(head))]
             thor.removedTcaN = "By tca nebulosa criteria can be removed : " + " - ".join(n)
-        #session['tcan'] = json.dumps(tcan.__dict__)
-    return render_template('result.html', title="Result", thor=thor, tcan=tcan)
+        return render_template('result.html', title="Result", thor=thor, tcan=tcan)
+    return render_template('result.html', title="Result", thor=thor)

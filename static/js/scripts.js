@@ -30,3 +30,19 @@ function showTca(){
         document.getElementById("tcan").style.display = 'none';
     }
 }
+
+function checkForm(){
+    var elementP = document.querySelectorAll('[id=p]');
+    var elementQ = document.querySelectorAll('[id=q]');
+    for(var i = 0; i < elementP.length; i++)
+    {
+        valueP = elementP[i].value;
+        valueQ = elementQ[i].value;
+        if (parseFloat(valueQ) > parseFloat(valueP))
+        {
+            alert("P values must be greater than Q values");
+            return false;
+        }
+    }
+    return true;
+}

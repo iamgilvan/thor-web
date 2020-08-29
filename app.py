@@ -1,11 +1,12 @@
 from flask import Flask, render_template
 import secrets
+import os
 
 secret = secrets.token_urlsafe(32)
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-app.secret_key = secret
+app.secret_key = os.urandom(24)
 
 from views.mcdm import *
 

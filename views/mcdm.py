@@ -2,7 +2,6 @@ from flask import render_template, request, redirect, session
 from app import app
 from models.thor import *
 from utils.utils import *
-#from utils.payload import *
 import json
 from collections import namedtuple
 

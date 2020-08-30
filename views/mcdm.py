@@ -10,7 +10,6 @@ configuration_file = "./input/config.json"
 
 import json
 global config
-global collection
 
 def build_config_params(full_path):
     global config
@@ -19,9 +18,10 @@ def build_config_params(full_path):
 
 @app.route('/start')
 def start():
-    build_config_params(configuration_file)
-    global collection
-    collection = mu.open_mongo_connection(config['mongo']['thor'])
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = Thor()
     thor.selected_method = int(request.args.get('method'))
     id = mu.write_on_mongo(collection, thor)
@@ -36,6 +36,10 @@ def start():
 
 @app.route('/main/<string:id>',  methods=['POST',])
 def main(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     thor['alternatives'] = [None] * int(request.form['alternative'])
     thor['decisors'] = [None] * int(request.form['decisor'])
@@ -50,6 +54,10 @@ def main(id):
 
 @app.route('/weight/<string:id>', methods=['POST'])
 def weight(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     thor['alternatives'] = [request.form[f'alternative{i}'] for i in range(1, len(thor['alternatives']) + 1)]
     thor['criterias'] = [request.form[f'criteria{i}'] for i in range(1, len(thor['criterias']) + 1)]
@@ -64,6 +72,10 @@ def weight(id):
 
 @app.route('/matrix/<string:id>', methods=['POST'])
 def matrix(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     assignment_method_selected = request.form['assignment']
     pesofim =[]

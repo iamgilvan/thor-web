@@ -110,6 +110,10 @@ def matrix(id):
 
 @app.route('/result/<string:id>', methods=['POST'])
 def result(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
     thorBd = mu.get_objects(collection, ObjectId(id))
     # obter valores do objeto antigo
     thor = Thor()

@@ -3,75 +3,111 @@ from app import app
 from models.thor import *
 from utils.utils import *
 import json
-from collections import namedtuple
+from bson.objectid import ObjectId
+from utils import mongo_utils as mu
+
+configuration_file = "./input/config.json"
 
 import json
+global config
+global collection
 
-class Payload(object):
-     def __init__(self, j):
-         self.__dict__ = json.loads(j)
+def build_config_params(full_path):
+    global config
+    with open(full_path) as f:
+        config = json.loads(f.read())
 
 @app.route('/start')
 def start():
+    build_config_params(configuration_file)
+    global collection
+    collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = Thor()
     thor.selected_method = int(request.args.get('method'))
-    session['thor'] = json.dumps(thor.__dict__) 
-    return render_template('main.html', title='Main Parameters', alternative=len(thor.alternatives), criteria=len(thor.criterias), decisor=len(thor.decisors))
+    id = mu.write_on_mongo(collection, thor)
+    return render_template('main.html',
+                            title='Main Parameters',
+                            id=id)
+                            # ,
+                            # alternative=len(thor['alternatives']),
+                            # criteria=len(thor['criterias']),
+                            # decisor=len(thor['decisors']))
 
 
-@app.route('/main',  methods=['GET', 'POST',])
-def main():
-    thor = Payload(session.get('thor', None))
-    thor.alternatives = [None] * int(request.form['alternative'])
-    thor.decisors = [None] * int(request.form['decisor'])
-    thor.criterias = [None] * int(request.form['criteria'])
-    session['thor'] = json.dumps(thor.__dict__)
-    return render_template('info_names.html', title='Alternatives and Criterias name',
-                            alternatives=thor.alternatives,
-                            criterias=thor.criterias)
+@app.route('/main/<string:id>',  methods=['POST',])
+def main(id):
+    thor = mu.get_objects(collection, ObjectId(id))
+    thor['alternatives'] = [None] * int(request.form['alternative'])
+    thor['decisors'] = [None] * int(request.form['decisor'])
+    thor['criterias'] = [None] * int(request.form['criteria'])
+    mu.update(ObjectId(id), thor, collection)
+    return render_template('info_names.html',
+                           id=id,
+                            title='Alternatives and Criterias name',
+                            alternatives=thor['alternatives'],
+                            criterias=thor['criterias'])
 
 
-@app.route('/weight', methods=['POST'])
-def weight():
-    thor = Payload(session.get('thor', None))
-    thor.alternatives = [request.form[f'alternative{i}'] for i in range(1, len(thor.alternatives) + 1)]
-    thor.criterias = [request.form[f'criteria{i}'] for i in range(1, len(thor.criterias) + 1)]
-    session['thor'] = json.dumps(thor.__dict__)
-    return render_template("weight.html", title='Weight', criterias=thor.criterias, alternatives=thor.alternatives, decisors=thor.decisors)
+@app.route('/weight/<string:id>', methods=['POST'])
+def weight(id):
+    thor = mu.get_objects(collection, ObjectId(id))
+    thor['alternatives'] = [request.form[f'alternative{i}'] for i in range(1, len(thor['alternatives']) + 1)]
+    thor['criterias'] = [request.form[f'criteria{i}'] for i in range(1, len(thor['criterias']) + 1)]
+    mu.update(ObjectId(id), thor, collection)
+    return render_template("weight.html",
+                            id=id,
+                            title='Weight',
+                            criterias=thor['criterias'],
+                            alternatives=thor['alternatives'],
+                            decisors=thor['decisors'])
 
 
-@app.route('/matrix', methods=['POST'])
-def matrix():
-    thor = Payload(session.get('thor', None))
+@app.route('/matrix/<string:id>', methods=['POST'])
+def matrix(id):
+    thor = mu.get_objects(collection, ObjectId(id))
     assignment_method_selected = request.form['assignment']
     pesofim =[]
-    cri = len(thor.criterias)
+    cri = len(thor['criterias'])
     peso = [ 0 for i in range(cri)]
     if assignment_method_selected == '1':
-        for i in range(1, len(thor.decisors) + 1):
-            pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor.criterias) + 1)])
-        for i in range(len(thor.decisors)):
+        for i in range(1, len(thor['decisors']) + 1):
+            pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor['criterias']) + 1)])
+        for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
                 peso[j]+=(pesofim[i][j]/norm)
     elif assignment_method_selected == '2':
-        for i in range(1, len(thor.decisors) + 1):
+        for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i])
             for j in range(cri):
                 peso[j]+=(pesofim[i][j]/norm)
         for i in range(cri):
-            peso[i]=peso[i]/len(thor.decisors)
+            peso[i]=peso[i]/len(thor['decisors'])
     else:
         print("");
 
-    thor.peso = peso
-    thor.pesofim = pesofim
-    session['thor'] = json.dumps(thor.__dict__)
-    return render_template('matrix.html', title='Matrix', criterias=thor.criterias, alternatives=thor.alternatives, decisors=thor.decisors)
+    thor['peso'] = peso
+    thor['pesofim'] = pesofim
+    mu.update(ObjectId(id), thor, collection)
+    return render_template('matrix.html',
+                           id=id,
+                           title='Matrix',
+                           criterias=thor['criterias'],
+                           alternatives=thor['alternatives'],
+                           decisors=thor['decisors'])
 
-@app.route('/result', methods=['POST'])
-def result():
-    thor = Payload(session.get('thor', None))
+@app.route('/result/<string:id>', methods=['POST'])
+def result(id):
+    thorBd = mu.get_objects(collection, ObjectId(id))
+    # obter valores do objeto antigo
+    thor = Thor()
+    thor.alternatives = thorBd['alternatives']
+    thor.decisors = thorBd['decisors']
+    thor.criterias = thorBd['criterias']
+    thor.selected_method = thorBd['selected_method']
+    thor.peso = thorBd['peso']
+    thor.pesofim = thorBd['pesofim']
+    
     peso=[];peso2=[];peso3=[];peso4=[];ms1=0;ms2=0;ms3=0;p=[];q=[];d=[];t1=[];t2=[];t3=[];escolha=0;continuar=0;controle=0;testar=0;controlemaior=0;dic=0;controlador=0
     matrizs1=[];matrizs2=[];matrizs3=[];rs1=[];rs2=[];rs3=[];rs1o=[];rs2o=[];rs3o=[];pertinencia=[];pertinencia2=[];pertinenciatca=[];pertinencia2tca=[];indice=[];alternativas=[];alternativaso=[];criterios=[];cris1=[];cris2=[];cris3=[];cristotal=[];var=0;contador=0;originals1=[];originals2=[];originals3=[];medtcan=[];rtcan=[];tcaneb=[];neb=0;indice=0;tca1=0;tca2=0;tca3=0;f1=0;f2=0;f3=0;ver1=0;ver2=0;ver3=0;pos=0;pesofim=[];pesodec=[];pesom=[1];pesom2=[1];norm=0;ok=0
 
@@ -697,7 +733,7 @@ def result():
                 result.title = 'S1 result'
                 input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs1[row][col]) for col in range(alt)] for row in range(alt)]
                 bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs1[row]) for col in range(1)] for row in range(alt)]
-                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
+                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Without the criteria.")] for row in range(1)]
                 ordem2 = [[str(originals1[col]) for col in range(len(originals1))]+[str(" - Original.")] for row in range(1)]
                 result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
                 result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
@@ -862,7 +898,7 @@ def result():
                 result.title = 'S2 result'
                 input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs2[row][col]) for col in range(alt)] for row in range(alt)]
                 bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs2[row]) for col in range(1)] for row in range(alt)]
-                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
+                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Without the criteria.")] for row in range(1)]
                 ordem2 = [[str(originals2[col]) for col in range(len(originals2))]+[str(" - Original.")] for row in range(1)]
                 result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
                 result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
@@ -1024,7 +1060,7 @@ def result():
                 result.title = 'S3 result'
                 input_rows = [[str(alternativas[row])]+[str("-")]+[str(matrizs3[row][col]) for col in range(alt)] for row in range(alt)]
                 bottom = [[str(alternativas[row])]+[str("= ")]+[str(rs3[row]) for col in range(1)] for row in range(alt)]
-                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Sem o criterio.")] for row in range(1)]
+                ordem = [[str(alternativaso[col]) for col in range(len(alternativaso))]+[str(" - Without the criteria.")] for row in range(1)]
                 ordem2 = [[str(originals3[col]) for col in range(len(originals3))]+[str(" - Original.")] for row in range(1)]
                 result.S_result = [" ".join(input_rows[i]) for i in range(len(input_rows))]
                 result.somatorio = [" ".join(bottom[i]) for i in range(len(bottom))]
@@ -1110,4 +1146,5 @@ def result():
             n = [" - ".join(head[i]) for i in range(len(head))]
             thor.removedTcaN = "By tca nebulosa criteria can be removed : " + " - ".join(n)
         return render_template('result.html', title="Result", thor=thor, tcan=tcan)
+    #mu.update(ObjectId(id), thor, collection)
     return render_template('result.html', title="Result", thor=thor)

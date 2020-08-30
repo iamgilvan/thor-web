@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('matrix') }}" method="POST">
+<form action="{{ url_for('matrix', id=id) }}" method="POST">
 <div class="input-group mb-3">
     <div class="input-group-prepend">
       <label class="input-group-text" for="inputGroupSelect01">What assignment method do you want to use?</label>

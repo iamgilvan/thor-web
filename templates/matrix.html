@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('result') }}" onSubmit="return checkForm()" method="POST">
+<form action="{{ url_for('result', id=id) }}" onSubmit="return checkForm()" method="POST">
     <h6><b>Please let me know the main infos</b></h6>
 
     <table class="table">

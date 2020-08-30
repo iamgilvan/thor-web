@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('main') }}" method="POST">
+<form action="{{ url_for('main', id=id) }}" method="POST">
         <div class="form-line">
           <div class="col-md-6 mb-3">
             <label for="alternative">Alternatives number</label>

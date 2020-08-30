@@ -1,5 +1,5 @@
 {% extends "template.html" %} {% block conteudo %}
-<form action="{{ url_for('start') }}">
+<form action="{{ url_for('start') }}" enctype="multipart/form-data">
   <h4>What method do you want to use?</h4>
   <button name="method" value="1" type="submit" class="btn btn-primary btn-lg">
     Thor I

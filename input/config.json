@@ -1,0 +1,15 @@
+{
+    "mongo":
+    {
+            "thor":
+            {
+                "mongo_user"          : "iamgilvan",
+                "mongo_password"      : "gil6mec",
+                "_comment"            : "Este arquivo de configuração nunca deve ser comitado. Esta sendo apenas para os avaliadores utilizarem caso necessário",
+                "mongo_address"       : "ds111618.mlab.com",
+                "mongo_port"          : "11618",
+                "mongo_database"      : "thor",
+                "mongo_collection"    : "projetos"
+            }
+    }
+}

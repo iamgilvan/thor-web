@@ -18,8 +18,17 @@ function changeAssignment(){
     if(selectedValue == '1')
     {
         document.getElementById("weight").style.display = 'block';
-    }else{
+        document.getElementById("razao").style.display = 'none';
+        document.getElementById("escala").style.display = 'none';
+    }else if (selectedValue == '2'){
         document.getElementById("weight").style.display = 'none';
+        document.getElementById("razao").style.display = 'none';
+        document.getElementById("escala").style.display = 'block';
+    }
+    else if (selectedValue == '3'){
+        document.getElementById("weight").style.display = 'none';
+        document.getElementById("razao").style.display = 'block';
+        document.getElementById("escala").style.display = 'none';
     }
 }
 
@@ -31,6 +40,13 @@ function showTca(){
     }
 }
 
+function showW(){
+    if (document.getElementById('yescontinue').checked) {
+        document.getElementById("w").style.display = 'block';
+    }else{
+        document.getElementById("w").style.display = 'none';
+    }
+}
 function checkForm(){
     var elementP = document.querySelectorAll('[id=p]');
     var elementQ = document.querySelectorAll('[id=q]');
@@ -45,4 +61,8 @@ function checkForm(){
         }
     }
     return true;
+}
+
+function goBack() {
+    window.history.back();
 }

@@ -1,0 +1,22 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<form  action="{{ url_for('matrix', id=id) }}" method="POST">
+    <div>
+        {% for decisor in decisors %}
+        {% set first_index = loop.index %}
+            <p scope="row">Decisor {{ loop.index }} W:</p>
+            {% for question in questions %}
+            {% set second_index = loop.index %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-default">{{question.questionB}}</span>
+                    </div>
+                    <input style="width: 100px" step="any" min="{{question.min}}" max="{{question.max}}" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% include "buttons.html" %}
+        </div>
+    </form>
+{% endblock %}

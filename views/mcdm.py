@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, url_for
 from app import app
 from models.thor import *
 from utils.utils import *
@@ -28,10 +28,6 @@ def start():
     return render_template('main.html',
                             title='Main Parameters',
                             id=id)
-                            # ,
-                            # alternative=len(thor['alternatives']),
-                            # criteria=len(thor['criterias']),
-                            # decisor=len(thor['decisors']))
 
 
 @app.route('/main/<string:id>',  methods=['POST',])
@@ -59,10 +55,16 @@ def weight(id):
         build_config_params(configuration_file)
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
+    thor['assignment_method_selected'] = 0
     thor['alternatives'] = [request.form[f'alternative{i}'] for i in range(1, len(thor['alternatives']) + 1)]
     thor['criterias'] = [request.form[f'criteria{i}'] for i in range(1, len(thor['criterias']) + 1)]
+    cri = len(thor['criterias'])
+    questions =[]
+    for j in range(cri-1):
+        questions.append( thor['criterias'][j+1] +' regarding '+ thor['criterias'][j])
     mu.update(ObjectId(id), thor, collection)
     return render_template("weight.html",
+                            questions=questions,
                             id=id,
                             title='Weight',
                             criterias=thor['criterias'],
@@ -70,33 +72,178 @@ def weight(id):
                             decisors=thor['decisors'])
 
 
-@app.route('/matrix/<string:id>', methods=['POST'])
+@app.route('/escala/<string:id>', methods=['POST'])
+def escala(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
+    thor = mu.get_objects(collection, ObjectId(id))
+    thor['assignment_method_selected'] = 2
+    pesofim =[]
+    cri = len(thor['criterias'])
+    peso = [ 0 for i in range(cri)]
+    thor['questionObj'] = []
+    pesom=[1]
+    for j in range(cri-1):
+        pesom.append(0)
+    for i in range(1, len(thor['decisors']) + 1):
+        for j in range(cri-1):
+            d = j + 1
+            pref = float(request.form[f'decisor-s-{i}-{d}'])
+            pesom[j+1]=pesom[j]+pref
+        padrao=min(pesom)
+        if padrao<=0:
+            for j in range(cri):
+                pesom[j]+=(1-padrao)
+        questions =[]
+        marc=2
+        for j in range(cri-marc):
+            ask = Question()
+            questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
+            ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
+            ask.position = j+marc
+            ask.decisor = i
+            thor['questionObj'].append(ask.__dict__)
+    thor['peso'] = peso
+    thor['pesom'] = pesom
+    mu.update(ObjectId(id), thor, collection)
+    return render_template ('weight_continue.html',
+                                id=id,
+                                title='Accept this weight',
+                                questions=questions,
+                                pesom=pesom,
+                                decisors=thor['decisors'])
+
+
+@app.route('/razao/<string:id>', methods=['POST'])
+def razao(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
+    thor = mu.get_objects(collection, ObjectId(id))
+    thor['assignment_method_selected'] = 3
+    pesofim =[]
+    cri = len(thor['criterias'])
+    peso = [ 0 for i in range(cri)]
+    thor['questionObj'] = []
+    pesom=[1]
+    for j in range(cri-1):
+        pesom.append(0)
+    for i in range(1, len(thor['decisors']) + 1):
+        for j in range(cri-1):
+            d = j + 1
+            pref = float(request.form[f'decisor-r-{i}-{d}'])
+            pesom[j+1]=pesom[j]*pref
+        questions =[]
+        marc=2
+        for j in range(cri-marc):
+            ask = Question()
+            questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
+            ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
+            ask.position = j+marc
+            ask.decisor = i
+            thor['questionObj'].append(ask.__dict__)
+    thor['peso'] = peso
+    thor['pesom'] = pesom
+    mu.update(ObjectId(id), thor, collection)
+    return render_template ('weight_continue.html',
+                                id=id,
+                                title='Accept this weight',
+                                questions=questions,
+                                pesom=pesom,
+                                decisors=thor['decisors'])
+
+
+
+@app.route('/weightbetween/<string:id>', methods=['POST'])
+def weightbetween(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
+    thor = mu.get_objects(collection, ObjectId(id))
+    input_values = []
+    for i in range(1, len(thor['decisors']) + 1):
+        for j in range(1, len(thor['questionObj']) + 1):
+            if thor['assignment_method_selected'] == 3:
+                input_values.append(float(request.form[f'decisor-{i}-{j}'])*thor['pesom'][j])
+            else:
+                input_values.append(float(request.form[f'decisor-{i}-{j}']))
+        marc=2
+        index = 0
+        cri = len(thor['criterias'])
+        for j in range(cri-marc):
+            pref = input_values[index]
+            thor['questionObj'][index]['min'] = min(pref,thor['pesom'][j+marc])
+            thor['questionObj'][index]['max'] = max(pref,thor['pesom'][j+marc])
+            thor['questionObj'][index]['questionB'] = "Choose a value between " + str(min(pref,thor['pesom'][j+marc])) + " and " + str(max(pref,thor['pesom'][j+marc]))+ " to " + thor['criterias'][j+marc]
+            index += 1
+    mu.update(ObjectId(id), thor, collection)
+    return render_template ('weight_between.html',
+                                id=id,
+                                title='Weight',
+                                questions=thor['questionObj'],
+                                decisors=thor['decisors'])
+
+
+@app.route('/matrix/<string:id>', methods=['GET', 'POST'])
 def matrix(id):
     collection = None
     while collection is None:
         build_config_params(configuration_file)
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
-    assignment_method_selected = request.form['assignment']
-    pesofim =[]
+    pesom = thor['pesom']
+    pesofim = thor['pesofim']
     cri = len(thor['criterias'])
-    peso = [ 0 for i in range(cri)]
-    if assignment_method_selected == '1':
+    peso = thor['peso']
+    if thor['assignment_method_selected'] == 3:
+        if len(request.form) > 0:
+            for i in range(1, len(thor['decisors']) + 1):
+                marc = 2
+                for j in range(1, len(thor['questionObj']) + 1):
+                    value = float(request.form[f'decisor-{i}-{j}'])
+                    pesom[(j-1)+marc] = value
+                marc += 1
+                pesofim.append(pesom)
+        else:
+            pesofim.append(pesom)
+
+        for i in range(len(thor['decisors'])):
+            norm=max(pesofim[i])
+            for j in range(cri):
+                peso[j]+=(pesofim[i][j]/norm)
+        for i in range(cri):
+            peso[i]=peso[i]/len(thor['decisors'])
+    elif thor['assignment_method_selected'] == 2:
+        if len(request.form) > 0:
+            for i in range(1, len(thor['decisors']) + 1):
+                marc = 2
+                for j in range(1, len(thor['questionObj']) + 1):
+                    value = float(request.form[f'decisor-{i}-{j}'])
+                    pesom[(j-1)+marc] = value+pesom[(j-1)]
+                marc += 1
+                pesofim.append(pesom)
+        else:
+            pesofim.append(pesom)
+
+        for i in range(1, len(thor['decisors']) + 1):
+            norm=max(pesofim[i-1])
+            for j in range(cri):
+                peso[j]+=(pesofim[i-1][j]/norm)
+    else:
+        thor['assignment_method_selected'] = 1
+        pesofim = []
+        cri = len(thor['criterias'])
+        peso = [ 0 for i in range(cri)]
         for i in range(1, len(thor['decisors']) + 1):
             pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor['criterias']) + 1)])
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
                 peso[j]+=(pesofim[i][j]/norm)
-    elif assignment_method_selected == '2':
-        for i in range(1, len(thor['decisors']) + 1):
-            norm=max(pesofim[i])
-            for j in range(cri):
-                peso[j]+=(pesofim[i][j]/norm)
-        for i in range(cri):
-            peso[i]=peso[i]/len(thor['decisors'])
-    else:
-        print("");
 
     thor['peso'] = peso
     thor['pesofim'] = pesofim
@@ -104,9 +251,11 @@ def matrix(id):
     return render_template('matrix.html',
                            id=id,
                            title='Matrix',
+                           peso=peso,
                            criterias=thor['criterias'],
                            alternatives=thor['alternatives'],
                            decisors=thor['decisors'])
+
 
 @app.route('/result/<string:id>', methods=['POST'])
 def result(id):
@@ -123,7 +272,7 @@ def result(id):
     thor.selected_method = thorBd['selected_method']
     thor.peso = thorBd['peso']
     thor.pesofim = thorBd['pesofim']
-    
+
     peso=[];peso2=[];peso3=[];peso4=[];ms1=0;ms2=0;ms3=0;p=[];q=[];d=[];t1=[];t2=[];t3=[];escolha=0;continuar=0;controle=0;testar=0;controlemaior=0;dic=0;controlador=0
     matrizs1=[];matrizs2=[];matrizs3=[];rs1=[];rs2=[];rs3=[];rs1o=[];rs2o=[];rs3o=[];pertinencia=[];pertinencia2=[];pertinenciatca=[];pertinencia2tca=[];indice=[];alternativas=[];alternativaso=[];criterios=[];cris1=[];cris2=[];cris3=[];cristotal=[];var=0;contador=0;originals1=[];originals2=[];originals3=[];medtcan=[];rtcan=[];tcaneb=[];neb=0;indice=0;tca1=0;tca2=0;tca3=0;f1=0;f2=0;f3=0;ver1=0;ver2=0;ver3=0;pos=0;pesofim=[];pesodec=[];pesom=[1];pesom2=[1];norm=0;ok=0
 

@@ -7,7 +7,8 @@ class Thor:
         self.decisors = []
         self.result = []
         self.pesofim = []
-        self.peso =[]
+        self.peso = []
+        self.pesom = []
         self.result_tca_s1 = []
         self.result_tca_s2 = []
         self.result_tca_s3 = []
@@ -17,6 +18,7 @@ class Thor:
         self.removedTcaN = ""
         self.result_tca_n = []
         self.usartca = False
+        self.questionObj = []
 
 class Result:
     def __init__(self):
@@ -42,3 +44,12 @@ class TcaNebulosa:
         self.mediaalt = []
         self.mediamedias =[]
         self.removed = ""
+
+class Question:
+    def __init__(self):
+        self.question = ""
+        self.questionB = ""
+        self.min = 0
+        self.max = 0
+        self.position = 0
+        self.decisor = 1

@@ -1,54 +1,79 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('matrix', id=id) }}" method="POST">
 <div class="input-group mb-3">
     <div class="input-group-prepend">
       <label class="input-group-text" for="inputGroupSelect01">What assignment method do you want to use?</label>
     </div>
     <select id="selectBox" name="assignment" onchange="javascript:changeAssignment();" class="custom-select" id="inputGroupSelect01" required>
       <option selected value="1">Direct Assignment</option>
-      <option value="2">Reason Scale</option>
-      <option value="3">Interval Scale</option>
+      <option value="3">Reason Scale</option>
+      <option value="2">Interval Scale</option>
     </select>
 </div>
-<!-- 
+
+<form id="razao" style="display:none" action="{{ url_for('razao', id=id) }}" method="POST">
+<div>
 {% for decisor in decisors %}
 {% set first_index = loop.index %}
-<tr>
-    <th scope="row">Decisor {{ loop.index }} W:</th>
-    {% for criteria in criterias %}
+    <p scope="row">Decisor {{ loop.index }} W:</p>
+    {% for question in questions %}
     {% set second_index = loop.index %}
-        <td scope="col">
-            <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
-        </td>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{question}}</span>
+            </div>
+            <input style="width: 100px" type="number" name="decisor-r-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+        </div>
     {% endfor %}
-</tr>
-{% endfor %} -->
+{% endfor %}
+</div>
+{% include "buttons.html" %}
+</form>
 
-<table id="weight" class="table" style="display:block">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">Direct Assignment</th>
-        {% for criteria in criterias %}
-            <th scope="col">{{ criteria }}</th>
+<form id="escala" style="display:none" action="{{ url_for('escala', id=id) }}" method="POST">
+<div>
+    {% for decisor in decisors %}
+    {% set first_index = loop.index %}
+        <p scope="row">Decisor {{ loop.index }} W:</p>
+        {% for question in questions %}
+        {% set second_index = loop.index %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{question}}</span>
+                </div>
+                <input style="width: 100px" type="number" name="decisor-s-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+            </div>
         {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-        {% for decisor in decisors %}
-        {% set first_index = loop.index %}
+    {% endfor %}
+    </div>
+    {% include "buttons.html" %}
+</form>
+
+<form id="weight" style="display:block" action="{{ url_for('matrix', id=id) }}" method="POST">
+    <table class="table">
+        <thead class="thead-dark">
         <tr>
-            <th scope="row">Decisor {{ loop.index }} W:</th>
+            <th scope="col">Direct Assignment</th>
             {% for criteria in criterias %}
-            {% set second_index = loop.index %}
-                <td scope="col">
-                    <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
-                </td>
+                <th scope="col">{{ criteria }}</th>
             {% endfor %}
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% include "buttons.html" %}
+        </thead>
+        <tbody>
+            {% for decisor in decisors %}
+            {% set first_index = loop.index %}
+            <tr>
+                <th scope="row">Decisor {{ loop.index }} W:</th>
+                {% for criteria in criterias %}
+                {% set second_index = loop.index %}
+                    <td scope="col">
+                        <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include "buttons.html" %}
 </form>
 {% endblock %}

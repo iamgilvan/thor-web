@@ -1,0 +1,50 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<h4>Current weight</h4>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      {% for i in pesom %}
+          <th class="col-md-auto">{{i}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+</table>
+
+<div>
+    <p>Do you wish to continue?</p>
+    <div class="form-check form-check-inline">
+    <input  onclick="javascript:showW();" class="form-check-input" type="radio" name="wContinue" value="0" id="nocontinue" checked>
+    <label class="form-check-label" for="inlineRadio1">
+      No
+    </label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input onclick="javascript:showW();" class="form-check-input" type="radio" name="wContinue" value="1" id="yescontinue">
+    <label class="form-check-label" for="inlineRadio2">
+      Yes
+    </label>
+  </div>
+</div>
+<form id="w" style="display:none" action="{{ url_for('weightbetween', id=id) }}" method="POST">
+<div>
+    {% for decisor in decisors %}
+    {% set first_index = loop.index %}
+        <p scope="row">Decisor {{ loop.index }} W:</p>
+        {% for question in questions %}
+        {% set second_index = loop.index %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{question}}</span>
+                </div>
+                <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+            </div>
+        {% endfor %}
+      {% endfor %}
+
+    {% include "buttons.html" %}
+    </div>
+</form>
+<a class="btn btn-primary" type="submit" href="{{ url_for('matrix', id=id) }}">No, Next step</a>
+{% endblock %}

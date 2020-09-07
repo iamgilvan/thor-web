@@ -11,7 +11,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-default">{{question.questionB}}</span>
                     </div>
-                    <input style="width: 100px" step="any" min="{{question.min}}" max="{{question.max}}" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                    <input style="width: 100px" step="any" min="{{question.min}}" max="{{question.max}}" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
                 </div>
             {% endfor %}
         {% endfor %}

@@ -140,6 +140,7 @@ def razao(id):
                 pref = float(request.form[f'decisor-r-{i}-{d}'])
                 pesom[d]=pesom[j]*pref
         thor['pesom'] = pesom
+        thor['indexDecisor'] = 1
     else:
         thor['marc'] +=1
         thor['indexCriMarc'] = 0
@@ -166,6 +167,16 @@ def weightregarding(id):
         thor['indexCriMarc'] += 1
 
     if thor['marc']==cri-1 and "between" in request.referrer:
+        if thor['indexDecisor'] < len(thor['decisors']):
+            thor['marc'] = 1
+            thor['indexDecisor'] += 1
+            thor['pesofim'].append(thor['pesom'])
+            pesom=[1]
+            for j in range(cri-1):
+                pesom.append(0)
+            thor['pesom'] = pesom
+            mu.update(ObjectId(id), thor, collection)
+            return redirect(url_for('razao', id=id))
         mu.update(ObjectId(id), thor, collection)
         return redirect(url_for('matrix', id=id))
 
@@ -179,7 +190,7 @@ def weightregarding(id):
                                 id=id,
                                 title='Regarding Weight',
                                 questions=q,
-                                dIndex=len(thor['decisors']))
+                                dIndex=thor['indexDecisor'])
 
 
 
@@ -197,14 +208,14 @@ def weightbetween(id):
         pref = float(request.form['r'])
     mi = min(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
     ma = max(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
-    q = "Choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
+    q = "choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
     return render_template('weight_between.html',
                                 id=id,
                                 mi=mi,
                                 ma=ma,
                                 title='Weight between',
                                 questions=q,
-                                dIndex=len(thor['decisors']))
+                                dIndex=thor['indexDecisor'])
 
 
 
@@ -260,6 +271,7 @@ def matrix(id):
     mu.update(ObjectId(id), thor, collection)
     return render_template('matrix.html',
                            id=id,
+                           pesofim = pesofim,
                            title='Matrix',
                            peso=peso,
                            criterias=thor['criterias'],

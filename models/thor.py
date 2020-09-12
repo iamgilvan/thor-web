@@ -9,6 +9,7 @@ class Thor:
         self.pesofim = []
         self.peso = []
         self.pesom = []
+        self.pesomList = []
         self.result_tca_s1 = []
         self.result_tca_s2 = []
         self.result_tca_s3 = []

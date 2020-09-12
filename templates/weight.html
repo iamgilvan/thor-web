@@ -22,7 +22,7 @@
             <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{question}}</span>
             </div>
-            <input style="width: 100px" type="number" name="decisor-r-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+            <input style="width: 100px" step="any" type="number" name="decisor-r-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
         </div>
     {% endfor %}
 {% endfor %}
@@ -41,7 +41,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{question}}</span>
                 </div>
-                <input style="width: 100px" type="number" name="decisor-s-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                <input style="width: 100px" step="any" type="number" name="decisor-s-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
             </div>
         {% endfor %}
     {% endfor %}
@@ -67,7 +67,7 @@
                 {% for criteria in criterias %}
                 {% set second_index = loop.index %}
                     <td scope="col">
-                        <input style="width: 100px" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                        <input style="width: 100px" step="any" type="number" name="decisor-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
                     </td>
                 {% endfor %}
             </tr>

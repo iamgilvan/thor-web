@@ -63,6 +63,26 @@ function checkForm(){
     return true;
 }
 
+function checkMinMax(){
+    var min = parseFloat(document.getElementsByTagName("input")[0].getAttribute('minimo'))
+    var max = parseFloat(document.getElementsByTagName("input")[0].getAttribute('maximo'))
+    var input = parseFloat(document.getElementsByTagName("input")[0].value)
+    if (min >= 0 && max >= 0){
+        if (input >= min && input <= max)
+        {
+            return true;
+        }
+    }
+    else{
+        if (input <= min && input >= max)
+        {
+            return true;
+        }
+    }
+    alert("Input value must be between the values displayed");
+    return false;
+}
+
 function goBack() {
     window.history.back();
 }

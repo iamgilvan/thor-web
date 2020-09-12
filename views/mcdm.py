@@ -72,7 +72,7 @@ def weight(id):
                             decisors=thor['decisors'])
 
 
-@app.route('/escala/<string:id>', methods=['POST'])
+@app.route('/escala/<string:id>', methods=['GET','POST'])
 def escala(id):
     collection = None
     while collection is None:
@@ -80,11 +80,8 @@ def escala(id):
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     thor['assignment_method_selected'] = 2
-    #pesofim =[]
     cri = len(thor['criterias'])
     if len(request.form) > 0:
-        #peso = [ 0 for i in range(cri)]
-        #thor['questionObj'] = []
         pesom=[1]
         for j in range(cri-1):
             pesom.append(0)
@@ -92,7 +89,7 @@ def escala(id):
             for j in range(cri-1):
                 d = j + 1
                 pref = float(request.form[f'decisor-s-{i}-{d}'])
-                pesom[j+1]=pesom[j]+pref
+                pesom[d]=pesom[j]+pref
             padrao=min(pesom)
             if padrao<=0:
                 for j in range(cri):
@@ -101,22 +98,10 @@ def escala(id):
     else:
         thor['marc'] +=1
         thor['indexCriMarc'] = 0
-    #     questions =[]
-    #     marc=2
-    #     for j in range(cri-marc):
-    #         ask = Question()
-    #         questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
-    #         ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
-    #         ask.position = j+marc
-    #         ask.decisor = i
-    #         thor['questionObj'].append(ask.__dict__)
-    # thor['peso'] = peso
-    thor['pesom'] = pesom
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_continue.html',
                                 id=id,
                                 title='Accept this weight',
-                                #questions=questions,
                                 pesom=thor['pesom'],
                                 decisors=thor['decisors'])
 
@@ -137,8 +122,9 @@ def razao(id):
         for i in range(1, len(thor['decisors']) + 1):
             for j in range(cri-1):
                 d = j + 1
-                pref = float(request.form[f'decisor-r-{i}-{d}'])
-                pesom[d]=pesom[j]*pref
+                pref = request.form[f'decisor-r-{i}-{d}']
+                pref = float(pref)
+                pesom[j+1]=pesom[j]*pref
         thor['pesom'] = pesom
     else:
         thor['marc'] +=1
@@ -162,17 +148,23 @@ def weightregarding(id):
     cri = len(thor['criterias'])
 
     if request.method == 'POST':
-        thor['pesom'][thor['indexCriMarc']+thor['marc']]=float(request.form['r'])
+        if thor['assignment_method_selected'] == 3:
+            thor['pesom'][thor['indexCriMarc']+thor['marc']]=float(request.form['r'])
+        else:
+            thor['pesom'][thor['indexCriMarc']+thor['marc']]=thor['pesom'][thor['indexCriMarc']]+float(request.form['r'])
         thor['indexCriMarc'] += 1
 
     if thor['marc']==cri-1 and "between" in request.referrer:
         mu.update(ObjectId(id), thor, collection)
         return redirect(url_for('matrix', id=id))
 
-    if "razao" not in request.referrer  or "escala" not in request.referrer :
+    if "razao" not in request.referrer or "escala" not in request.referrer :
         if thor['indexCriMarc'] >= cri-thor['marc']:
             mu.update(ObjectId(id), thor, collection)
-            return redirect(url_for('razao', id=id))
+            if thor['assignment_method_selected'] == 3:
+                return redirect(url_for('razao', id=id))
+            else:
+                return redirect(url_for('escala', id=id))
     q = thor['criterias'][thor['indexCriMarc']+thor['marc']] +' regarding '+ thor['criterias'][thor['indexCriMarc']]
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_regarding.html',
@@ -193,11 +185,13 @@ def weightbetween(id):
 
     if thor['assignment_method_selected'] == 3:
         pref = float(request.form['r'])*thor['pesom'][thor['indexCriMarc']]
+        mi = min(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
+        ma = max(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
     else:
         pref = float(request.form['r'])
-    mi = min(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
-    ma = max(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
-    q = "Choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
+        mi = pref
+        ma = thor['pesom'][thor['indexCriMarc']+thor['marc']]-thor['pesom'][thor['indexCriMarc']]
+    q = "choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
     return render_template('weight_between.html',
                                 id=id,
                                 mi=mi,
@@ -218,7 +212,6 @@ def matrix(id):
     pesom = thor['pesom']
     pesofim = thor['pesofim']
     cri = len(thor['criterias'])
-    #peso = thor['peso']
     peso = [ 0 for i in range(cri)]
     if thor['assignment_method_selected'] == 3:
         pesofim.append(pesom)
@@ -229,17 +222,7 @@ def matrix(id):
         for i in range(cri):
             peso[i]=peso[i]/len(thor['decisors'])
     elif thor['assignment_method_selected'] == 2:
-        if len(request.form) > 0:
-            for i in range(1, len(thor['decisors']) + 1):
-                marc = 2
-                for j in range(1, len(thor['questionObj']) + 1):
-                    value = float(request.form[f'decisor-{i}-{j}'])
-                    pesom[(j-1)+marc] = value+pesom[(j-1)]
-                marc += 1
-                pesofim.append(pesom)
-        else:
-            pesofim.append(pesom)
-
+        pesofim.append(pesom)
         for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i-1])
             for j in range(cri):
@@ -262,6 +245,7 @@ def matrix(id):
                            id=id,
                            title='Matrix',
                            peso=peso,
+                           pesofim=pesofim[0],
                            criterias=thor['criterias'],
                            alternatives=thor['alternatives'],
                            decisors=thor['decisors'])

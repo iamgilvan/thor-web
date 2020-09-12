@@ -19,6 +19,10 @@ class Thor:
         self.result_tca_n = []
         self.usartca = False
         self.questionObj = []
+        self.indexDecisor = 0
+        self.indexCri1 = 0
+        self.indexCriMarc = 0
+        self.marc = 2
 
 class Result:
     def __init__(self):

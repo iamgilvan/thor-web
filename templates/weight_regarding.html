@@ -1,13 +1,13 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form  action="{{ url_for('weightregarding', id=id) }}" method="POST">
+<form  action="{{ url_for('weightbetween', id=id) }}" method="POST">
     <div>
         <p scope="row">Decisor {{ dIndex }} W:</p>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">What's your preferences of {{questions}}</span>
                 </div>
-                <input style="width: 100px" step="any" min="{{mi}}" max="{{ma}}" type="number" name="r" class="form-control mx-sm-3" required>
+                <input style="width: 100px" step="any" type="number" name="r" class="form-control mx-sm-3" required>
             </div>
         </div>
         <button class="btn btn-primary" type="submit">Submit</button>

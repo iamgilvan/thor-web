@@ -80,43 +80,48 @@ def escala(id):
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     thor['assignment_method_selected'] = 2
-    pesofim =[]
+    #pesofim =[]
     cri = len(thor['criterias'])
-    peso = [ 0 for i in range(cri)]
-    thor['questionObj'] = []
-    pesom=[1]
-    for j in range(cri-1):
-        pesom.append(0)
-    for i in range(1, len(thor['decisors']) + 1):
+    if len(request.form) > 0:
+        #peso = [ 0 for i in range(cri)]
+        #thor['questionObj'] = []
+        pesom=[1]
         for j in range(cri-1):
-            d = j + 1
-            pref = float(request.form[f'decisor-s-{i}-{d}'])
-            pesom[j+1]=pesom[j]+pref
-        padrao=min(pesom)
-        if padrao<=0:
-            for j in range(cri):
-                pesom[j]+=(1-padrao)
-        questions =[]
-        marc=2
-        for j in range(cri-marc):
-            ask = Question()
-            questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
-            ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
-            ask.position = j+marc
-            ask.decisor = i
-            thor['questionObj'].append(ask.__dict__)
-    thor['peso'] = peso
+            pesom.append(0)
+        for i in range(1, len(thor['decisors']) + 1):
+            for j in range(cri-1):
+                d = j + 1
+                pref = float(request.form[f'decisor-s-{i}-{d}'])
+                pesom[j+1]=pesom[j]+pref
+            padrao=min(pesom)
+            if padrao<=0:
+                for j in range(cri):
+                    pesom[j]+=(1-padrao)
+        thor['pesom'] = pesom
+    else:
+        thor['marc'] +=1
+        thor['indexCriMarc'] = 0
+    #     questions =[]
+    #     marc=2
+    #     for j in range(cri-marc):
+    #         ask = Question()
+    #         questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
+    #         ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
+    #         ask.position = j+marc
+    #         ask.decisor = i
+    #         thor['questionObj'].append(ask.__dict__)
+    # thor['peso'] = peso
     thor['pesom'] = pesom
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_continue.html',
                                 id=id,
                                 title='Accept this weight',
-                                questions=questions,
-                                pesom=pesom,
+                                #questions=questions,
+                                pesom=thor['pesom'],
                                 decisors=thor['decisors'])
 
 
-@app.route('/razao/<string:id>', methods=['POST'])
+@app.route('/razao/<string:id>', methods=['GET','POST'])
 def razao(id):
     collection = None
     while collection is None:
@@ -124,68 +129,83 @@ def razao(id):
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     thor['assignment_method_selected'] = 3
-    pesofim =[]
     cri = len(thor['criterias'])
-    peso = [ 0 for i in range(cri)]
-    thor['questionObj'] = []
-    pesom=[1]
-    for j in range(cri-1):
-        pesom.append(0)
-    for i in range(1, len(thor['decisors']) + 1):
+    if len(request.form) > 0:
+        pesom=[1]
         for j in range(cri-1):
-            d = j + 1
-            pref = float(request.form[f'decisor-r-{i}-{d}'])
-            pesom[j+1]=pesom[j]*pref
-        questions =[]
-        marc=2
-        for j in range(cri-marc):
-            ask = Question()
-            questions.append(thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j])
-            ask.question = thor['criterias'][j+marc] +' regarding '+ thor['criterias'][j]
-            ask.position = j+marc
-            ask.decisor = i
-            thor['questionObj'].append(ask.__dict__)
-    thor['peso'] = peso
-    thor['pesom'] = pesom
+            pesom.append(0)
+        for i in range(1, len(thor['decisors']) + 1):
+            for j in range(cri-1):
+                d = j + 1
+                pref = float(request.form[f'decisor-r-{i}-{d}'])
+                pesom[d]=pesom[j]*pref
+        thor['pesom'] = pesom
+    else:
+        thor['marc'] +=1
+        thor['indexCriMarc'] = 0
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_continue.html',
                                 id=id,
                                 title='Accept this weight',
-                                questions=questions,
-                                pesom=pesom,
+                                pesom=thor['pesom'],
                                 decisors=thor['decisors'])
 
 
 
-@app.route('/weightbetween/<string:id>', methods=['POST'])
+@app.route('/weightregarding/<string:id>', methods=['GET','POST'])
+def weightregarding(id):
+    collection = None
+    while collection is None:
+        build_config_params(configuration_file)
+        collection = mu.open_mongo_connection(config['mongo']['thor'])
+    thor = mu.get_objects(collection, ObjectId(id))
+    cri = len(thor['criterias'])
+
+    if request.method == 'POST':
+        thor['pesom'][thor['indexCriMarc']+thor['marc']]=float(request.form['r'])
+        thor['indexCriMarc'] += 1
+
+    if thor['marc']==cri-1 and "between" in request.referrer:
+        mu.update(ObjectId(id), thor, collection)
+        return redirect(url_for('matrix', id=id))
+
+    if "razao" not in request.referrer  or "escala" not in request.referrer :
+        if thor['indexCriMarc'] >= cri-thor['marc']:
+            mu.update(ObjectId(id), thor, collection)
+            return redirect(url_for('razao', id=id))
+    q = thor['criterias'][thor['indexCriMarc']+thor['marc']] +' regarding '+ thor['criterias'][thor['indexCriMarc']]
+    mu.update(ObjectId(id), thor, collection)
+    return render_template ('weight_regarding.html',
+                                id=id,
+                                title='Regarding Weight',
+                                questions=q,
+                                dIndex=len(thor['decisors']))
+
+
+
+@app.route('/weightbetween/<string:id>', methods=['GET','POST'])
 def weightbetween(id):
     collection = None
     while collection is None:
         build_config_params(configuration_file)
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
-    input_values = []
-    for i in range(1, len(thor['decisors']) + 1):
-        for j in range(1, len(thor['questionObj']) + 1):
-            if thor['assignment_method_selected'] == 3:
-                input_values.append(float(request.form[f'decisor-{i}-{j}'])*thor['pesom'][j])
-            else:
-                input_values.append(float(request.form[f'decisor-{i}-{j}']))
-        marc=2
-        index = 0
-        cri = len(thor['criterias'])
-        for j in range(cri-marc):
-            pref = input_values[index]
-            thor['questionObj'][index]['min'] = min(pref,thor['pesom'][j+marc])
-            thor['questionObj'][index]['max'] = max(pref,thor['pesom'][j+marc])
-            thor['questionObj'][index]['questionB'] = "Choose a value between " + str(min(pref,thor['pesom'][j+marc])) + " and " + str(max(pref,thor['pesom'][j+marc]))+ " to " + thor['criterias'][j+marc]
-            index += 1
-    mu.update(ObjectId(id), thor, collection)
-    return render_template ('weight_between.html',
+
+    if thor['assignment_method_selected'] == 3:
+        pref = float(request.form['r'])*thor['pesom'][thor['indexCriMarc']]
+    else:
+        pref = float(request.form['r'])
+    mi = min(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
+    ma = max(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
+    q = "Choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
+    return render_template('weight_between.html',
                                 id=id,
-                                title='Weight',
-                                questions=thor['questionObj'],
-                                decisors=thor['decisors'])
+                                mi=mi,
+                                ma=ma,
+                                title='Weight between',
+                                questions=q,
+                                dIndex=len(thor['decisors']))
+
 
 
 @app.route('/matrix/<string:id>', methods=['GET', 'POST'])
@@ -198,19 +218,10 @@ def matrix(id):
     pesom = thor['pesom']
     pesofim = thor['pesofim']
     cri = len(thor['criterias'])
-    peso = thor['peso']
+    #peso = thor['peso']
+    peso = [ 0 for i in range(cri)]
     if thor['assignment_method_selected'] == 3:
-        if len(request.form) > 0:
-            for i in range(1, len(thor['decisors']) + 1):
-                marc = 2
-                for j in range(1, len(thor['questionObj']) + 1):
-                    value = float(request.form[f'decisor-{i}-{j}'])
-                    pesom[(j-1)+marc] = value
-                marc += 1
-                pesofim.append(pesom)
-        else:
-            pesofim.append(pesom)
-
+        pesofim.append(pesom)
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
@@ -237,7 +248,6 @@ def matrix(id):
         thor['assignment_method_selected'] = 1
         pesofim = []
         cri = len(thor['criterias'])
-        peso = [ 0 for i in range(cri)]
         for i in range(1, len(thor['decisors']) + 1):
             pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor['criterias']) + 1)])
         for i in range(len(thor['decisors'])):

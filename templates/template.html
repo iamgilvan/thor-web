@@ -22,13 +22,6 @@
   </head>
   <body>
     <div class="container">
-        {% with messages = get_flashed_messages() %} {% if messages %}
-        <ul id="messages" class="list-unstyled">
-          {% for message in messages %}
-          <li class="alert alert-success">{{ message }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %} {% endwith %}
         <div class="page-header">
           <h1>{{ title }}</h1>
         </div>
@@ -37,4 +30,10 @@
         <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
     </div>
   </body>
+  <footer>
+    <div class="container">
+    <p>All rights reserved. The non-commercial (academic) use of this software is free of charge. The only thing that is asked in return is to cite this software when results are used in publications.</p>
+    <p>ALMEIDA, Gilvan Praxedes; TENÓRIO, Fabrício Maione; ARAÚJO, Jean de Carvalho; GOMES, Carlos Francisco Simões; SANTOS, Marcos dos. THOR Web software (v.1), 2020.</p>
+  </div>
+  </footer>
 </html>

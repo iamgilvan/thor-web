@@ -94,6 +94,7 @@ def escala(id):
             if padrao<=0:
                 for j in range(cri):
                     pesom[j]+=(1-padrao)
+            thor['pesomList'].append(pesom)
         thor['pesom'] = pesom
     else:
         thor['marc'] +=1
@@ -101,9 +102,9 @@ def escala(id):
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_continue.html',
                                 id=id,
+                                dindex=thor['indexDecisor'] + 1,
                                 title='Accept this weight',
-                                pesom=thor['pesom'],
-                                decisors=thor['decisors'])
+                                pesom=thor['pesom'])
 
 
 @app.route('/razao/<string:id>', methods=['GET','POST'])
@@ -125,6 +126,7 @@ def razao(id):
                 pref = request.form[f'decisor-r-{i}-{d}']
                 pref = float(pref)
                 pesom[j+1]=pesom[j]*pref
+            thor['pesomList'].append(pesom)
         thor['pesom'] = pesom
     else:
         thor['marc'] +=1
@@ -132,10 +134,9 @@ def razao(id):
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_continue.html',
                                 id=id,
+                                dindex=thor['indexDecisor'] + 1,
                                 title='Accept this weight',
-                                pesom=thor['pesom'],
-                                decisors=thor['decisors'])
-
+                                pesom=thor['pesom'])
 
 
 @app.route('/weightregarding/<string:id>', methods=['GET','POST'])
@@ -155,6 +156,20 @@ def weightregarding(id):
         thor['indexCriMarc'] += 1
 
     if thor['marc']==cri-1 and "between" in request.referrer:
+        if thor['indexDecisor'] < len(thor['decisors']):
+            thor['marc'] = 1
+            thor['pesomList'][thor['indexDecisor']] = thor['pesom']
+            thor['indexDecisor'] += 1
+            if thor['indexDecisor'] == len(thor['decisors']):
+                mu.update(ObjectId(id), thor, collection)
+                return redirect(url_for('matrix', id=id))
+            thor['pesofim'].append(thor['pesom'])
+            thor['pesom'] = thor['pesomList'][thor['indexDecisor']]
+            mu.update(ObjectId(id), thor, collection)
+            if thor['assignment_method_selected'] == 3:
+                return redirect(url_for('razao', id=id))
+            else:
+                return redirect(url_for('escala', id=id))
         mu.update(ObjectId(id), thor, collection)
         return redirect(url_for('matrix', id=id))
 
@@ -171,7 +186,7 @@ def weightregarding(id):
                                 id=id,
                                 title='Regarding Weight',
                                 questions=q,
-                                dIndex=len(thor['decisors']))
+                                dIndex=thor['indexDecisor'] + 1)
 
 
 
@@ -198,7 +213,7 @@ def weightbetween(id):
                                 ma=ma,
                                 title='Weight between',
                                 questions=q,
-                                dIndex=len(thor['decisors']))
+                                dIndex=thor['indexDecisor'] +1)
 
 
 
@@ -209,6 +224,18 @@ def matrix(id):
         build_config_params(configuration_file)
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
+    #se tiver mais decisor precisa redirecionar 
+    if thor['indexDecisor'] < len(thor['decisors']):
+            thor['marc'] = 1
+            thor['pesomList'][thor['indexDecisor']] = thor['pesom']
+            thor['indexDecisor'] += 1
+            thor['pesofim'].append(thor['pesom'])
+            thor['pesom'] = thor['pesomList'][thor['indexDecisor']]
+            mu.update(ObjectId(id), thor, collection)
+            if thor['assignment_method_selected'] == 3:
+                return redirect(url_for('razao', id=id))
+            else:
+                return redirect(url_for('escala', id=id))
     pesom = thor['pesom']
     pesofim = thor['pesofim']
     cri = len(thor['criterias'])
@@ -245,7 +272,7 @@ def matrix(id):
                            id=id,
                            title='Matrix',
                            peso=peso,
-                           pesofim=pesofim[0],
+                           pesofims=pesofim,
                            criterias=thor['criterias'],
                            alternatives=thor['alternatives'],
                            decisors=thor['decisors'])

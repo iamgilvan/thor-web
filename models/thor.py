@@ -23,6 +23,7 @@ class Thor:
         self.indexCri1 = 0
         self.indexCriMarc = 0
         self.marc = 2
+        self.pesomList = []
 
 class Result:
     def __init__(self):

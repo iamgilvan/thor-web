@@ -2,15 +2,18 @@
 {% block conteudo %}
 <form action="{{ url_for('result', id=id) }}" onSubmit="return checkForm()" method="POST">
     <h6><b>Weight</b></h6>
+    {% for p in pesofims %}
     <div class="container">
         <div class="row">
-            {% for p in pesofim %}
+            <p>Descisor {{loop.index}}</p>
+            {% for i in p %}
                 <div class="col-2">
-                    {{p}}
+                    {{i}}
                 </div>
             {% endfor %}
         </div>
       </div>
+      {% endfor %}
     <h6><b>Normalized weight</b></h6>
     <div class="container">
         <div class="row">

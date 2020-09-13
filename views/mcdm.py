@@ -225,7 +225,7 @@ def matrix(id):
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     #se tiver mais decisor precisa redirecionar 
-    if thor['indexDecisor'] < len(thor['decisors']):
+    if thor['indexDecisor'] < len(thor['decisors']) and len(thor['pesomList']) != 0:
             thor['marc'] = 1
             thor['pesomList'][thor['indexDecisor']] = thor['pesom']
             thor['indexDecisor'] += 1

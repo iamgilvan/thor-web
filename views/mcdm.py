@@ -246,9 +246,15 @@ def matrix(id):
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
-                peso[j]+=(pesofim[i][j]/norm)
+                #Mudança na normalização para média geométrica
+                if i==0:
+                    #Passa a somar apenas no primeiro valor
+                    peso[j]+=(pesofim[i][j]/norm)
+                else:
+                    #Passa a multiplicar os seguintes
+                    peso[j]*=(pesofim[i][j]/norm)
         for i in range(cri):
-            peso[i]=round(peso[i]/len(thor['decisors']), 5)
+            peso[i]=round(peso[i]**(1/2), 5)
     elif thor['assignment_method_selected'] == 2:
         for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i-1])

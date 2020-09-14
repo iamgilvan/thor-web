@@ -117,10 +117,10 @@ def razao(id):
     thor['assignment_method_selected'] = 3
     cri = len(thor['criterias'])
     if len(request.form) > 0:
-        pesom=[1]
-        for j in range(cri-1):
-            pesom.append(0)
         for i in range(1, len(thor['decisors']) + 1):
+            pesom=[1]
+            for j in range(cri-1):
+                pesom.append(0)
             for j in range(cri-1):
                 d = j + 1
                 pref = request.form[f'decisor-r-{i}-{d}']

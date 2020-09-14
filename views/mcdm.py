@@ -82,10 +82,10 @@ def escala(id):
     thor['assignment_method_selected'] = 2
     cri = len(thor['criterias'])
     if len(request.form) > 0:
-        pesom=[1]
-        for j in range(cri-1):
-            pesom.append(0)
         for i in range(1, len(thor['decisors']) + 1):
+            pesom=[1]
+            for j in range(cri-1):
+                pesom.append(0)
             for j in range(cri-1):
                 d = j + 1
                 pref = float(request.form[f'decisor-s-{i}-{d}'])
@@ -95,7 +95,7 @@ def escala(id):
                 for j in range(cri):
                     pesom[j]+=(1-padrao)
             thor['pesomList'].append(pesom)
-        thor['pesom'] = pesom
+        thor['pesom'] = thor['pesomList'][0]
     else:
         thor['marc'] +=1
         thor['indexCriMarc'] = 0
@@ -127,7 +127,7 @@ def razao(id):
                 pref = float(pref)
                 pesom[j+1]=pesom[j]*pref
             thor['pesomList'].append(pesom)
-        thor['pesom'] = pesom
+        thor['pesom'] = thor['pesomList'][0]
     else:
         thor['marc'] +=1
         thor['indexCriMarc'] = 0

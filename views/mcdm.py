@@ -259,7 +259,7 @@ def matrix(id):
         pesofim = []
         cri = len(thor['criterias'])
         for i in range(1, len(thor['decisors']) + 1):
-            pesofim.append([int(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor['criterias']) + 1)])
+            pesofim.append([float(request.form[f'decisor-{i}-{j}']) for j in range(1, len(thor['criterias']) + 1)])
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):

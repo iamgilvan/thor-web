@@ -5,6 +5,7 @@ from utils.utils import *
 import json
 from bson.objectid import ObjectId
 from utils import mongo_utils as mu
+from scipy.stats.mstats import gmean
 
 configuration_file = "./input/config.json"
 
@@ -189,7 +190,6 @@ def weightregarding(id):
                                 dIndex=thor['indexDecisor'] + 1)
 
 
-
 @app.route('/weightbetween/<string:id>', methods=['GET','POST'])
 def weightbetween(id):
     collection = None
@@ -249,12 +249,12 @@ def matrix(id):
             for j in range(cri):
                 peso[j]+=(pesofim[i][j]/norm)
         for i in range(cri):
-            peso[i]=peso[i]/len(thor['decisors'])
+            peso[i]=round(peso[i]/len(thor['decisors']), 5)
     elif thor['assignment_method_selected'] == 2:
         for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i-1])
             for j in range(cri):
-                peso[j]+=(pesofim[i-1][j]/norm)
+                peso[j]+=round((pesofim[i-1][j]/norm), 5)
     else:
         thor['assignment_method_selected'] = 1
         pesofim = []
@@ -264,7 +264,7 @@ def matrix(id):
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
-                peso[j]+=(pesofim[i][j]/norm)
+                peso[j]+=round((pesofim[i][j]/norm), 5)
 
     thor['peso'] = peso
     thor['pesofim'] = pesofim

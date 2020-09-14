@@ -5,7 +5,6 @@ from utils.utils import *
 import json
 from bson.objectid import ObjectId
 from utils import mongo_utils as mu
-from scipy.stats.mstats import gmean
 
 configuration_file = "./input/config.json"
 

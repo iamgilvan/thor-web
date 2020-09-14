@@ -230,6 +230,9 @@ def matrix(id):
             thor['pesomList'][thor['indexDecisor']] = thor['pesom']
             thor['indexDecisor'] += 1
             thor['pesofim'].append(thor['pesom'])
+            if thor['indexDecisor'] == len(thor['decisors']):
+                mu.update(ObjectId(id), thor, collection)
+                return redirect(url_for('matrix', id=id))
             thor['pesom'] = thor['pesomList'][thor['indexDecisor']]
             mu.update(ObjectId(id), thor, collection)
             if thor['assignment_method_selected'] == 3:
@@ -241,7 +244,6 @@ def matrix(id):
     cri = len(thor['criterias'])
     peso = [ 0 for i in range(cri)]
     if thor['assignment_method_selected'] == 3:
-        pesofim.append(pesom)
         for i in range(len(thor['decisors'])):
             norm=max(pesofim[i])
             for j in range(cri):
@@ -249,7 +251,6 @@ def matrix(id):
         for i in range(cri):
             peso[i]=peso[i]/len(thor['decisors'])
     elif thor['assignment_method_selected'] == 2:
-        pesofim.append(pesom)
         for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i-1])
             for j in range(cri):

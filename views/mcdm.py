@@ -253,8 +253,11 @@ def matrix(id):
                 else:
                     #Passa a multiplicar os seguintes
                     peso[j]*=(pesofim[i][j]/norm)
-        for i in range(cri):
-            peso[i]=round(peso[i]**(1/2), 5)
+        if len(thor['decisors']) > 1:
+            for i in range(cri):
+                peso[i]=round(peso[i]**(1/2), 5)
+        else:
+            peso = [round(peso[i],5) for i in range(cri)]
     elif thor['assignment_method_selected'] == 2:
         for i in range(1, len(thor['decisors']) + 1):
             norm=max(pesofim[i-1])

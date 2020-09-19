@@ -160,10 +160,10 @@ def weightregarding(id):
             thor['marc'] = 1
             thor['pesomList'][thor['indexDecisor']] = thor['pesom']
             thor['indexDecisor'] += 1
+            thor['pesofim'].append(thor['pesom'])
             if thor['indexDecisor'] == len(thor['decisors']):
                 mu.update(ObjectId(id), thor, collection)
                 return redirect(url_for('matrix', id=id))
-            thor['pesofim'].append(thor['pesom'])
             thor['pesom'] = thor['pesomList'][thor['indexDecisor']]
             mu.update(ObjectId(id), thor, collection)
             if thor['assignment_method_selected'] == 3:

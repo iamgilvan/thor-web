@@ -5,6 +5,9 @@ from utils.utils import *
 import json
 from bson.objectid import ObjectId
 from utils import mongo_utils as mu
+from utils.pdf_utils import PDF
+import os
+from datetime import datetime
 
 configuration_file = "./input/config.json"
 
@@ -25,6 +28,9 @@ def start():
     thor = Thor()
     thor.selected_method = int(request.args.get('method'))
     id = mu.write_on_mongo(collection, thor)
+    for file in os.listdir('static'):
+        if file.endswith('.pdf'):
+            os.remove('static/' + file)
     return render_template('main.html',
                             title='Main Parameters',
                             id=id)
@@ -40,6 +46,7 @@ def main(id):
     thor['alternatives'] = [None] * int(request.form['alternative'])
     thor['decisors'] = [None] * int(request.form['decisor'])
     thor['criterias'] = [None] * int(request.form['criteria'])
+
     mu.update(ObjectId(id), thor, collection)
     return render_template('info_names.html',
                            id=id,
@@ -62,6 +69,7 @@ def weight(id):
     questions =[]
     for j in range(cri-1):
         questions.append( thor['criterias'][j+1] +' regarding '+ thor['criterias'][j])
+    thor['questions'] = questions
     mu.update(ObjectId(id), thor, collection)
     return render_template("weight.html",
                             questions=questions,
@@ -86,15 +94,18 @@ def escala(id):
             pesom=[1]
             for j in range(cri-1):
                 pesom.append(0)
+            temp = []
             for j in range(cri-1):
                 d = j + 1
                 pref = float(request.form[f'decisor-s-{i}-{d}'])
                 pesom[d]=pesom[j]+pref
+                temp.append("What's your preferences of " + thor['questions'][j] + " : " + str(pref))
             padrao=min(pesom)
             if padrao<=0:
                 for j in range(cri):
                     pesom[j]+=(1-padrao)
             thor['pesomList'].append(pesom)
+            thor['answer'].append(temp)
         thor['pesom'] = thor['pesomList'][0]
     else:
         thor['marc'] +=1
@@ -121,12 +132,15 @@ def razao(id):
             pesom=[1]
             for j in range(cri-1):
                 pesom.append(0)
+            temp = []
             for j in range(cri-1):
                 d = j + 1
                 pref = request.form[f'decisor-r-{i}-{d}']
                 pref = float(pref)
                 pesom[j+1]=pesom[j]*pref
+                temp.append("What's your preferences of " + thor['questions'][j] + " : " + str(pref))
             thor['pesomList'].append(pesom)
+            thor['answer'].append(temp)
         thor['pesom'] = thor['pesomList'][0]
     else:
         thor['marc'] +=1
@@ -147,10 +161,11 @@ def weightregarding(id):
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
     cri = len(thor['criterias'])
-
     if request.method == 'POST':
+        thor['answer'][thor['indexCriMarc'] - 1][-1] = thor['answer'][thor['indexCriMarc'] - 1][-1] + " : " + str(float(request.form['r']))
+
         if thor['assignment_method_selected'] == 3:
-            thor['pesom'][thor['indexCriMarc']+thor['marc']]=float(request.form['r'])
+            thor['pesom'][thor['indexCriMarc']+thor['marc']]= float(request.form['r'])
         else:
             thor['pesom'][thor['indexCriMarc']+thor['marc']]=thor['pesom'][thor['indexCriMarc']]+float(request.form['r'])
         thor['indexCriMarc'] += 1
@@ -181,6 +196,7 @@ def weightregarding(id):
             else:
                 return redirect(url_for('escala', id=id))
     q = thor['criterias'][thor['indexCriMarc']+thor['marc']] +' regarding '+ thor['criterias'][thor['indexCriMarc']]
+    thor['answer'][thor['indexCriMarc'] - 1].append("What's your preferences of " + q)
     mu.update(ObjectId(id), thor, collection)
     return render_template ('weight_regarding.html',
                                 id=id,
@@ -196,16 +212,19 @@ def weightbetween(id):
         build_config_params(configuration_file)
         collection = mu.open_mongo_connection(config['mongo']['thor'])
     thor = mu.get_objects(collection, ObjectId(id))
-
+    input_value = float(request.form['r'])
+    thor['answer'][thor['indexCriMarc'] - 1][-1] = thor['answer'][thor['indexCriMarc'] - 1][-1] + " : " + str(input_value)
     if thor['assignment_method_selected'] == 3:
-        pref = float(request.form['r'])*thor['pesom'][thor['indexCriMarc']]
+        pref = input_value*thor['pesom'][thor['indexCriMarc']]
         mi = min(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
         ma = max(pref,thor['pesom'][thor['indexCriMarc']+thor['marc']])
     else:
-        pref = float(request.form['r'])
+        pref = input_value
         mi = pref
         ma = thor['pesom'][thor['indexCriMarc']+thor['marc']]-thor['pesom'][thor['indexCriMarc']]
     q = "choose a value between " + str(mi) + " and " + str(ma) + " to " + thor['criterias'][thor['indexCriMarc']+thor['marc']]
+    thor['answer'][thor['indexCriMarc'] - 1].append("What's your preferences of " + q)
+    mu.update(ObjectId(id), thor, collection)
     return render_template('weight_between.html',
                                 id=id,
                                 mi=mi,
@@ -302,9 +321,50 @@ def result(id):
     thor.selected_method = thorBd['selected_method']
     thor.peso = thorBd['peso']
     thor.pesofim = thorBd['pesofim']
+    thor.assignment_method_selected = thorBd['assignment_method_selected']
+    thor.answer = thorBd['answer']
+
+    pdf = PDF()
+    pdf.alias_nb_pages()
+    pdf.add_page()
+    pdf.set_font('Arial', '', 9)
+    answer = 'THOR II' if thor.selected_method == 2 else 'THOR I'
+    pdf.cell(0, 5, f'Method selected : ' + answer, 0, 1)
 
     peso=[];peso2=[];peso3=[];peso4=[];ms1=0;ms2=0;ms3=0;p=[];q=[];d=[];t1=[];t2=[];t3=[];escolha=0;continuar=0;controle=0;testar=0;controlemaior=0;dic=0;controlador=0
     matrizs1=[];matrizs2=[];matrizs3=[];rs1=[];rs2=[];rs3=[];rs1o=[];rs2o=[];rs3o=[];pertinencia=[];pertinencia2=[];pertinenciatca=[];pertinencia2tca=[];indice=[];alternativas=[];alternativaso=[];criterios=[];cris1=[];cris2=[];cris3=[];cristotal=[];var=0;contador=0;originals1=[];originals2=[];originals3=[];medtcan=[];rtcan=[];tcaneb=[];neb=0;indice=0;tca1=0;tca2=0;tca3=0;f1=0;f2=0;f3=0;ver1=0;ver2=0;ver3=0;pos=0;pesofim=[];pesodec=[];pesom=[1];pesom2=[1];norm=0;ok=0
+
+    pdf.cell(0, 5, f"Number of alternatives : {len(thor.alternatives)}", 0, 1)
+    pdf.cell(0, 5, f"Number of criterias : {len(thor.criterias)}", 0, 1)
+    pdf.cell(0, 5, f"Number of decisors : {len(thor.decisors)}", 0, 1)
+
+    pdf.cell(0, 5, '', 0, 1)
+
+    pdf.cell(0, 5, 'Alternatives name: ', 0, 1)
+    pdf.cell(0, 5, f"{' - '.join(thor.alternatives)}", 0, 1)
+    pdf.cell(0, 5, 'Criterias name :', 0, 1)
+    pdf.cell(0, 5, f"{' - '.join(thor.criterias)}", 0, 1)
+
+    pdf.cell(0, 5, '', 0, 1)
+
+    pdf.cell(0, 5, 'Weights section:', 0, 1)
+    if thor.assignment_method_selected == 3:
+        pdf.cell(0, 5, 'Assignment method selected : Reason Scale', 0, 1)
+    elif thor.assignment_method_selected == 2:
+        pdf.cell(0, 5, 'Assignment method selected : Interval Scale', 0, 1)
+    else:
+        pdf.cell(0, 5, 'Assignment method selected : Direct Assignment', 0, 1)
+
+    for i in range(len(thor.decisors)):
+        text = f"Decisor {i+1} :"
+        if thor.answer and thor.answer[i]:
+            for j in thor.answer[i]:
+                pdf.cell(0, 5, text + j, 0, 1)
+        lista= ' - '.join(str(x) for x in thor.pesofim[i])
+        pdf.cell(0, 5, text + lista, 0, 1)
+
+    pdf.cell(0, 5, f"Final weights : {' - '.join(str(x) for x in thor.peso)}", 0, 1)
+    pdf.cell(0, 5, '', 0, 1)
 
     cri = len(thor.criterias)
     criterios = thor.criterias
@@ -360,16 +420,22 @@ def result(id):
     thor.user_pertinence = user_pertinence
     thor.usartca = True if usartca == 0 else False
     if user_pertinence:
+        pdf.cell(0, 5, "Do you would like to use pertinence: Yes", 0, 1)
         #pegado os pesos da matriz de pertinencia
         for i in range(1, cri+1):
             pertinencia.append(float(request.form[f'value-matrix-c-{i}']))
             pertinenciatca.append(float(request.form[f'value-matrix-c-{i}']))
+        pdf.cell(0, 5, f"Pertinence weights : {' - '.join(str(x) for x in pertinencia)}", 0, 1)
         #pegado a matriz de pertinencia
+        pdf.cell(0, 5, f"Pertinence matrix section:", 0, 1)
         for i in range(1, alt+1):
-          for j in range(1, cri+1):
-            pertinencia2[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
-            pertinencia2tca[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
+            for j in range(1, cri+1):
+                pertinencia2[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
+                pertinencia2tca[i-1][j-1]=float(request.form[f'value-matrix-p-{i}-{j}'])
+            pdf.cell(0, 5, f"{' - '.join(str(x) for x in pertinencia2[i-1])}", 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
     else:
+        pdf.cell(0, 5, "Do you would like to use pertinence: No", 0, 1)
         for i in range(cri):
             pertinencia.append(1)
             pertinenciatca.append(1)
@@ -378,9 +444,22 @@ def result(id):
                 pertinencia2[i][j]=1
                 pertinencia2tca[i][j]=1
 
+    if thor.usartca:
+        pdf.cell(0, 5, "Do you would like to use TCA: Yes", 0, 1)
+    else:
+        pdf.cell(0, 5, "Do you would like to use TCA: No", 0, 1)
+
+    pdf.cell(0, 5, f"Matrix section:", 0, 1)
     for i in range(1, len(thor.alternatives) + 1):
         for j in range(1, len(thor.criterias) + 1):
             matriz[i-1][j-1]=float(request.form[f'alternative-value-{i}-{j}'])
+        pdf.cell(0, 5, f"{' - '.join(str(x) for x in matriz[i-1])}", 0, 1)
+
+    pdf.cell(0, 5, '', 0, 1)
+    pdf.cell(0, 5, f"P : {' - '.join(str(x) for x in p)}", 0, 1)
+    pdf.cell(0, 5, f"Q : {' - '.join(str(x) for x in q)}", 0, 1)
+    pdf.cell(0, 5, f"D : {' - '.join(str(x) for x in d)}", 0, 1)
+    pdf.cell(0, 5, '', 0, 1)
 
     media1=round(Utils.media(pertinencia),4)
     medtcan.append(media1)
@@ -1285,8 +1364,65 @@ def result(id):
                 ordem = [[str(cris3[row]) for col in range(1)] for row in range(len(cris3))]
                 c = [" - ".join(ordem[i]) for i in range(len(ordem))]
                 thor.tca_s3_citerio_removed = "Criteria can be removed :" + " - ".join(c)
+
+    for r in range(len(thor.result)):
+        title = f"Result S{r+1}"
+        pdf.cell(0, 5, title, 0, 1)
+        obj = thor.result[r]
+        for i in range(len(obj.S_result)):
+            pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.S_result[i])}", 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+        for i in range(len(obj.somatorio)):
+            pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.somatorio[i])}", 0, 1)
+        pdf.cell(0, 5, obj.original, 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+
+    if usartca!=1:
+        pdf.cell(0, 5, "TCA Result section:", 0, 1)
+        for r in range(len(thor.result_tca_s1)):
+            obj = thor.result_tca_s1[r]
+            pdf.cell(0, 5, obj.title, 0, 1)
+            pdf.cell(0, 5, obj.sub_title, 0, 1)
+            for i in range(len(obj.S_result)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.S_result[i])}", 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in range(len(obj.somatorio)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.somatorio[i])}", 0, 1)
+            pdf.cell(0, 5, obj.original, 0, 1)
+            if obj.original2:
+                pdf.cell(0, 5, obj.original2, 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+
+        for r in range(len(thor.result_tca_s2)):
+            obj = thor.result_tca_s2[r]
+            pdf.cell(0, 5, obj.title, 0, 1)
+            pdf.cell(0, 5, obj.sub_title, 0, 1)
+            for i in range(len(obj.S_result)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.S_result[i])}", 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in range(len(obj.somatorio)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.somatorio[i])}", 0, 1)
+            pdf.cell(0, 5, obj.original, 0, 1)
+            if obj.original2:
+                pdf.cell(0, 5, obj.original2, 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+
+        for r in range(len(thor.result_tca_s3)):
+            obj = thor.result_tca_s3[r]
+            pdf.cell(0, 5, obj.title, 0, 1)
+            pdf.cell(0, 5, obj.sub_title, 0, 1)
+            for i in range(len(obj.S_result)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.S_result[i])}", 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in range(len(obj.somatorio)):
+                pdf.cell(0, 5, f"{' '.join(str(x) for x in obj.somatorio[i])}", 0, 1)
+            pdf.cell(0, 5, obj.original, 0, 1)
+            if obj.original2:
+                pdf.cell(0, 5, obj.original2, 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
     if thor.usartca and thor.user_pertinence:
         tcan = TcaNebulosa()
+        pdf.cell(0, 5, "Nebulosa TCA original result section:", 0, 1)
         head = [["Weights - "]+[str(pertinencia[col]) for col in range(cri)]]
         input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(cri)] for row in range(alt)]
         medias = [["Average of weights :"]+[str(medtcan[0])]]
@@ -1297,6 +1433,23 @@ def result(id):
         tcan.medias = [" ".join(medias[i]) for i in range(len(medias))]
         tcan.mediamedias = [" ".join(mediamedias[i]) for i in range(len(mediamedias))]
         tcan.mediaalt = [" ".join(mediaalt[i]) for i in range(len(mediaalt))]
+
+        for i in tcan.head:
+            pdf.cell(0, 5, i , 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+        for i in tcan.input_rows:
+            pdf.cell(0, 5, i , 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+        for i in tcan.medias:
+            pdf.cell(0, 5, i , 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+        for i in tcan.mediamedias:
+            pdf.cell(0, 5, i , 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+        for i in tcan.mediaalt:
+            pdf.cell(0, 5, i , 0, 1)
+        pdf.cell(0, 5, '', 0, 1)
+
         for i in range(len(cristotal)):
             neb=0;rtcan=[];rt2=[]
             pos=criterios.index(cristotal[i])
@@ -1310,6 +1463,7 @@ def result(id):
                 z=round(((rtcan[k+1]+rtcan[0])/2),4)
                 rt2.append(z)
             tcanCalc = TcaNebulosa()
+            pdf.cell(0, 5, "Nebulosa TCA calculated result section:", 0, 1)
             header =  [['Removing criteria']+[str(cristotal[i])]]
             head = [["Weights - "]+[str(pertinencia[col]) for col in range(len(pertinencia))]]
             input_rows = [[" "]+[str(alternativas[row])]+["- "]+[str(pertinencia2[row][col]) for col in range(len(pertinencia))] for row in range(alt)]
@@ -1324,6 +1478,26 @@ def result(id):
             tcanCalc.mediamedias = [" ".join(mediamedias[i]) for i in range(len(mediamedias))]
             tcanCalc.mediaalt = [" ".join(mediaalt[i]) for i in range(len(mediaalt))]
             thor.result_tca_n.append(tcanCalc)
+            for i in tcanCalc.title:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in tcanCalc.head:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in tcanCalc.input_rows:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in tcanCalc.medias:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in tcanCalc.mediamedias:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+            for i in tcanCalc.mediaalt:
+                pdf.cell(0, 5, i , 0, 1)
+            pdf.cell(0, 5, '', 0, 1)
+
+
             for k in range(alt):
                 pertinencia2[k].insert(pos,pertinencia2tca[k][pos])
             pertinencia.insert(pos,pertinenciatca[pos])
@@ -1340,6 +1514,12 @@ def result(id):
             head = [[str(tcaneb[row]) for col in range(1)] for row in range(len(tcaneb))]
             n = [" - ".join(head[i]) for i in range(len(head))]
             thor.removedTcaN = "By tca nebulosa criteria can be removed : " + " - ".join(n)
-        return render_template('result.html', title="Result", thor=thor, tcan=tcan)
-    #mu.update(ObjectId(id), thor, collection)
-    return render_template('result.html', title="Result", thor=thor)
+        pdf.cell(0, 5, thor.removedTcaN, 0, 1)
+        filename = 'static/'+ datetime.now().strftime("%m_%d_%y_%H%M%S") + '.pdf'
+        pdf.output( filename , 'F')
+
+        return render_template('result.html', title="Result", thor=thor, tcan=tcan, file=filename)
+
+    filename = 'static/'+ datetime.now().strftime("%m_%d_%y_%H%M%S") + '.pdf'
+    pdf.output( filename , 'F')
+    return render_template('result.html', title="Result", thor=thor, file=filename)

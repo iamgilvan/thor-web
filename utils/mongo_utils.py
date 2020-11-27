@@ -16,11 +16,10 @@ def open_mongo_connection(config): #type='read'
     res = True
     col = None
     try:
-        client = create_client(config['mongo_address'], int(config['mongo_port']))
+        client = pym.MongoClient("mongodb+srv://iamgilvan:gil6mec@thor.rtpxq.mongodb.net/thor?retryWrites=true&w=majority")
         client.re
-        db     = get_database(client, config['mongo_database'])
-        db.authenticate(config['mongo_user'], config['mongo_password'])
-        col    = get_collection(db, config['mongo_collection'])
+        db     = get_database(client, 'thor')
+        col    = get_collection(db, 'projetos')
     except Exception as ex:
         res = False
     return col

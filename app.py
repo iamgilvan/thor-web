@@ -9,6 +9,9 @@ from views.mcdm import *
 def home():
     return render_template('home.html', title='Thor Web')
 
+@app.route('/maintenance')
+def maintenance():
+    return render_template('maintenance.html', title='Thor Web')
 
 if __name__ == '__main__':
     app.run(port=5000)

@@ -18,7 +18,8 @@ class Thor:
         self.removedTcaN = ""
         self.result_tca_n = []
         self.usartca = False
-        self.questionObj = []
+        self.questions = []
+        self.answer = []
         self.indexDecisor = 0
         self.indexCri1 = 0
         self.indexCriMarc = 0

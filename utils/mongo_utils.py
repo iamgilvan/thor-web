@@ -11,6 +11,18 @@ def get_database(client, database_name):
 def get_collection(db, collection_name):
     return db[str(collection_name)]
 
+def connection(collection): #type='read'
+    res = True
+    col = None
+    try:
+        client = pym.MongoClient("mongodb+srv://iamgilvan:gil6mec@thor.rtpxq.mongodb.net/thor?retryWrites=true&w=majority")
+        client.re
+        db     = get_database(client, 'thor')
+        col    = get_collection(db, collection)
+    except Exception as ex:
+        res = False
+    return col
+
 
 def open_mongo_connection(config): #type='read'
     res = True

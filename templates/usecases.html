@@ -1,0 +1,19 @@
+{% extends "template.html" %} {% block conteudo %}
+<hr>
+{% for case in cases%}
+  <h5 align="center"><strong>{{case.title}}</strong></h5>
+  <div style="width: 560px; height: 315px; float: none; clear: both; margin: 2px auto;">
+    <embed
+      src="{{case.url}}"
+      wmode="transparent"
+      type="video/mp4"
+      width="100%" height="100%"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+      title="{{case.title}}">
+  </div>
+  <p align="center">{{case.description}}</p>
+  <i>Publish Date: {{case.publishdateformat}}</i>
+  <hr>
+{% endfor %}
+{% endblock %}

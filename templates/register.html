@@ -1,0 +1,38 @@
+{% extends "template.html" %} {% block conteudo %}
+      <form action="{{url_for('register') }}" method="post">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input class="form-control" type="text" placeholder="Title" name="title" required>
+
+        </div>
+        <div class="fform-group"></div>
+          <label for="description">Description:</label>
+          <textarea class="form-control" type="text" placeholder="description" name="description" required></textarea>
+
+        <div class="form-group"></div>
+          <label for="title">Url:</label>
+          <input class="form-control" type="text" placeholder="url" name="url" required>
+
+        <div class="form-group">
+          <label for="publishdate">Publish Date:</label>
+          <input class="form-control" type="date" placeholder="Publish Date"
+           id="publishdate" name="publishdate" required>
+        </div>
+
+      <input class="btn btn-primary" type="submit" value="Register">
+      </form>
+      <h1>Delete video</h1>
+      <form action="{{url_for('delete') }}" method="post">
+        <div class="form-group">
+          <label for="title">Url:</label>
+          <input class="form-control" type="text" placeholder="url" name="url" required>
+        </div>
+        <input class="btn btn-danger" type="submit" value="Delete">
+      </form>
+      {% if message %}
+        <p><strong>Result:</strong> {{ message }}
+      {% endif %}
+    </div>
+  </body>
+</html>
+{% endblock %}

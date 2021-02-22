@@ -80,7 +80,7 @@ def register():
 def usecase():
     collection = get_collection('videos')
     cases = collection.find().sort("publishdate", -1)
-    return render_template('usecases.html', title='Uses Cases', cases=cases)
+    return render_template('usecases.html', title='Use Cases', cases=cases)
 
 if __name__ == '__main__':
     app.run(port=5000)

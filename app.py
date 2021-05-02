@@ -87,5 +87,11 @@ def usecase():
 def about():
     return render_template('about.html', title='About')
 
+
+@app.route('/registerfile')
+def registerfile():
+    return render_template('register-page.html', title='Software Registrations')
+
+
 if __name__ == '__main__':
     app.run(port=5000)

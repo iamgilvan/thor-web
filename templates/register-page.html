@@ -1,0 +1,14 @@
+{% extends "template.html" %} {% block conteudo %}
+  <div>
+    <h3>Thor I</h3>
+    <embed src="{{ url_for('static', filename='file/THOR1.pdf') }}" type="application/pdf" width="100%" height="550px" />
+  </div>
+  <div>
+    <h3>Thor II</h3>
+    <embed src="{{ url_for('static', filename='file/THOR2.pdf') }}" type="application/pdf" width="100%" height="550px" />
+  </div>
+  <div>
+    <h3>Thor Web</h3>
+    <embed src="{{ url_for('static', filename='file/THORWeb.pdf') }}" type="application/pdf" width="100%" height="500px" />
+  </div>
+{% endblock %}

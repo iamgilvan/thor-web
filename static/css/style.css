@@ -1,0 +1,25 @@
+.dev-img {
+    height: 250px;
+    align-items: center;
+    border-radius: 50%;
+    width: 80%;
+}
+
+.dev-div-img {
+    width: 280px;
+    text-align: center;
+    margin: auto;
+}
+
+.link {
+    margin: auto;
+}
+
+.media {
+    width: 50px;
+    text-align: center;
+}
+
+.text {
+    text-align: justify;
+}

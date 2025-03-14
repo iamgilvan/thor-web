@@ -27,12 +27,9 @@ jobs:
       uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
       run: |
-        python -m venv venv
-        source venv/bin/activate
         python -m pip install --upgrade pipenv
         pipenv install --dev
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        source venv/bin/activate
         pipenv run pytest

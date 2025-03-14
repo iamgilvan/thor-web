@@ -1,0 +1,11 @@
+name: Check Python Versions
+
+on:
+  workflow_dispatch: # Permite rodar manualmente no GitHub Actions
+
+jobs:
+  check-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List available Python versions
+        run: curl -s https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json | jq '.[] | .version'

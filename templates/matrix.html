@@ -1,29 +1,41 @@
 {% extends "template.html" %}
 {% block conteudo %}
 <form action="{{ url_for('result', id=id) }}" onSubmit="return checkForm()" method="POST">
-    <h6><b>Weight</b></h6>
-    {% for p in pesofims %}
-    <div class="container">
-        <div class="row">
-            <p>Decisor {{loop.index}}</p>
-            {% for i in p %}
-                <div class="col-2">
-                    {{i}}
-                </div>
-            {% endfor %}
+    {% set is_fuzzy_thor2 = (thor.selected_method == 3) %}
+
+    {% if thor.selected_method != 3 %}
+        <h6><b>Weight</b></h6>
+        {% for p in pesofims %}
+        <div class="container">
+            <div class="row">
+                <p>Decisor {{loop.index}}</p>
+                {% for i in p %}
+                    <div class="col-2">{{ i }}</div>
+                {% endfor %}
+            </div>
         </div>
-      </div>
-      {% endfor %}
-    <h6><b>Normalized weight</b></h6>
+        {% endfor %}
+    {% endif %}
+
+    <h6><b>Normalized weights</b></h6>
     <div class="container">
         <div class="row">
+            <p>Weight triangular</p>
             {% for p in peso %}
-                <div class="col-2">
-                    {{p}}
-                </div>
+                <div class="col-2">{{ p }}</div>
             {% endfor %}
         </div>
-      </div>
+
+        {% if pesotrap %}
+        <div class="row">
+            <p>Weight trapezoidal</p>
+            {% for p in pesotrap %}
+                <div class="col-2">{{ p }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
     <h6><b>Please let me know the main infos</b></h6>
 
     <table class="table">
@@ -43,7 +55,7 @@
                 {% for criteria in criterias %}
                 {% set second_index = loop.index %}
                     <td scope="col">
-                        <input style="width: 100px" type="number" step="any"  name="alternative-value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
+                        <input style="width: 100px" type="number" step="any" name="alternative-value-{{first_index}}-{{second_index}}" class="form-control mx-sm-3" required>
                     </td>
                 {% endfor %}
             </tr>
@@ -60,7 +72,7 @@
                 <th scope="row">Q </th>
                 {% for criteria in criterias %}
                     <td scope="col">
-                        <input id="q"    type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
+                        <input id="q" type="number" lang="en-US" min="0" step="any" name="value-q-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px" required>
                     </td>
                 {% endfor %}
             </tr>
@@ -75,20 +87,19 @@
         </tbody>
     </table>
 
+    
     <p>Do you want to use pertinence</p>
     <div class="form-check form-check-inline">
-        <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="0" id="noCheck" checked>
-        <label class="form-check-label" for="inlineRadio1">
-          No
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input onclick="javascript:yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="1" id="yesCheck">
-        <label class="form-check-label" for="inlineRadio2">
-          Yes
-        </label>
-      </div>
-    <table class="table" id="matrixPertinence" style="display:none">
+        <input onclick="yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="0" id="noCheck" checked>
+        <label class="form-check-label" for="noCheck">No</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input onclick="yesnoCheck();" class="form-check-input" type="radio" name="pertinence" value="1" id="yesCheck">
+        <label class="form-check-label" for="yesCheck">Yes</label>
+    </div>
+
+    <!-- Pertinence of Criteria -->
+    <table class="table" id="matrixPertinenceCriteria" style="display:none">
         <thead class="thead-dark">
           <tr>
             <th scope="col">Pertinence of Criteria</th>
@@ -99,16 +110,25 @@
         </thead>
         <tbody>
             <tr>
-                <th scope="row">Pertinence </th>
+                <th scope="row">Pertinence</th>
                 {% for criteria in criterias %}
                     <td scope="col">
-                        <input id="matrixPertinenceValue" type="number" lang="en-US" min="0" step="any" name="value-matrix-c-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
+                        {% if is_fuzzy_thor2 %}
+                            
+                            <input type="number" class="form-control mx-sm-3" style="width: 100px" value="1" readonly tabindex="-1">
+                            <input type="hidden" name="value-matrix-c-{{loop.index}}" value="1">
+                        {% else %}
+                            
+                            <input id="matrixPertinenceValueC" type="number" lang="en-US" min="0" step="any" name="value-matrix-c-{{loop.index}}" class="form-control mx-sm-3" style="width: 100px">
+                        {% endif %}
                     </td>
                 {% endfor %}
             </tr>
         </tbody>
     </table>
-    <table class="table" id="matrixPertinence" style="display:none">
+
+    
+    <table class="table" id="matrixPertinenceAlt" style="display:none">
         <thead class="thead-dark">
           <tr>
             <th scope="col">Matrix of Pertinence</th>
@@ -125,27 +145,38 @@
                 {% for criteria in criterias %}
                 {% set second_index = loop.index %}
                     <td scope="col">
-                        <input id="matrixPertinenceValue" style="width: 100px" type="number" step="any"  name="value-matrix-p-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
+                        <input id="matrixPertinenceValueP" style="width: 100px" type="number" step="any" name="value-matrix-p-{{first_index}}-{{second_index}}" class="form-control mx-sm-3">
                     </td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
-      <p>Do you want to use tca?</p>
-      <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="tca" value="0" id="noYesTcaCheck" checked>
-          <label class="form-check-label" for="inlineRadio1">
-            No
-          </label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="tca" value="1" id="yesTcaCheck">
-          <label class="form-check-label" for="inlineRadio2">
-            Yes
-          </label>
-        </div>
 
-    {% include "buttons.html" %}
+    <script>
+      function yesnoCheck() {
+        var show = document.querySelector('input[name="pertinence"][value="1"]').checked;
+        var t1 = document.getElementById('matrixPertinenceCriteria');
+        var t2 = document.getElementById('matrixPertinenceAlt');
+        if (t1) t1.style.display = show ? '' : 'none';
+        if (t2) t2.style.display = show ? '' : 'none';
+      }
+      document.addEventListener('DOMContentLoaded', yesnoCheck);
+    </script>
+
+    
+    <p>Do you want to use tca?</p>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tca" value="0" id="noYesTcaCheck" checked>
+        <label class="form-check-label" for="noYesTcaCheck">No</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="tca" value="1" id="yesTcaCheck">
+        <label class="form-check-label" for="yesTcaCheck">Yes</label>
+    </div>
+
+    <div class="w-100 mt-3">
+        {% include "buttons.html" %}
+    </div>
 </form>
 {% endblock %}

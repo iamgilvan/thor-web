@@ -1,0 +1,295 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+<div class="ahp-page">
+
+<style>
+  .paper-title{ text-align:center; font-weight:600; margin:1.2rem 0 .4rem; }
+  .paper-hr{ border-top:1px solid #000; margin:.2rem 0 .6rem; }
+
+  /* ----- Tabela 1: Aggregated judgment matrix  ----- */
+  table.paper-matrix thead th{ background:#fff !important; color:#000 !important; }
+  table.paper-matrix{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; }
+  table.paper-matrix thead tr:first-child th{ border-top:1px solid #000; }
+  table.paper-matrix thead th{
+    font-weight:600; text-align:center; padding:6px 10px;
+    border-bottom:1px solid #000; border-left:0; border-right:0;
+  }
+  table.paper-matrix thead th.group-end{ border-right:1px solid #000; }
+  table.paper-matrix thead th.stub-sep{ border-right:1px solid #000; }
+  table.paper-matrix tbody th, table.paper-matrix tbody td{
+    padding:6px 10px; border-top:0; border-bottom:0; border-left:0; border-right:0;
+  }
+  table.paper-matrix tbody tr:last-child th,
+  table.paper-matrix tbody tr:last-child td{ border-bottom:1px solid #000 !important; }
+  table.paper-matrix tbody th{ font-weight:600; text-align:left; white-space:nowrap; }
+  table.paper-matrix tbody td{ text-align:center; }
+  table.paper-matrix tbody th.stub-sep{ border-right:1px solid #000; }
+  table.paper-matrix tbody td.group-end{ border-right:1px solid #000; }
+  .source{ margin:.6rem 0 1.2rem; text-align:center; color:#333; }
+
+  /* ----- Tabela 2: Fuzzy geometric mean ----- */
+  table.paper-matrix-gm{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; margin-top:1.25rem; }
+  table.paper-matrix-gm thead th{
+    background:#fff !important; color:#000 !important; font-weight:600; text-align:center;
+    padding:6px 12px; border-top:1px solid #000; border-bottom:1px solid #000; border-left:0; border-right:0;
+  }
+  table.paper-matrix-gm tbody th, table.paper-matrix-gm tbody td{
+    padding:6px 12px; border-top:0; border-bottom:0; border-left:0; border-right:0;
+  }
+  table.paper-matrix-gm tbody th{ font-weight:600; text-align:left; white-space:nowrap; }
+  table.paper-matrix-gm tbody td{ text-align:center; }
+  table.paper-matrix-gm tbody tr:last-child th,
+  table.paper-matrix-gm tbody tr:last-child td{ border-bottom:1px solid #000; }
+
+  /* ----- Tabela 3: Weights ----- */
+  table.paper-matrix-w{
+    width:420px; margin:1.25rem auto 0 auto;
+    border-collapse:separate; border-spacing:0; background:#fff;
+  }
+  table.paper-matrix-w thead th{
+    background:#fff !important; color:#000 !important; font-weight:600; text-align:center;
+    padding:6px 16px; border-top:1px solid #000; border-bottom:1px solid #000; border-left:0; border-right:0;
+  }
+  table.paper-matrix-w tbody th, table.paper-matrix-w tbody td{
+    padding:6px 16px; border-top:0; border-bottom:0; border-left:0; border-right:0;
+  }
+  table.paper-matrix-w tbody th{ font-weight:600; text-align:left; white-space:nowrap; }
+  table.paper-matrix-w tbody td{ text-align:center; }
+  table.paper-matrix-w tbody tr:last-child th,
+  table.paper-matrix-w tbody tr:last-child td{ border-bottom:1px solid #000; }
+
+  /* ----- Consistency badge ----- */
+  .consistency{ text-align:center; margin:.6rem 0 1.4rem; color:#222; }
+</style>
+
+<div class="paper-title">Table – Aggregated judgment matrix triangular</div>
+
+{% if new_matrix_fuzzy_triangular %}
+<table class="paper-matrix">
+  <thead>
+    <tr>
+      <th class="stub-sep"></th>
+      {% for c in criterias %}
+        <th colspan="3" class="group-end">{{ c }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in new_matrix_fuzzy_triangular %}
+      {% set i = loop.index0 %}
+      <tr>
+        <th class="stub-sep">{{ criterias[i] }}</th>
+        {% for cell in row %}
+          <td>{{ '%.3f'|format(cell[0]) }}</td>
+          <td>{{ '%.3f'|format(cell[1]) }}</td>
+          <td class="group-end">{{ '%.3f'|format(cell[2]) }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Aggregate matrix not available.</p>
+{% endif %}
+
+<div class="paper-title">Table – Fuzzy Geometric Mean Value Triangular</div>
+{% if fuzzy_geometric_mean_triangular is defined and fuzzy_geometric_mean_triangular %}
+<table class="paper-matrix-gm">
+  <thead>
+    <tr>
+      <th></th><th>l</th><th>m</th><th>u</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cell in fuzzy_geometric_mean_triangular %}
+      <tr>
+        <th>{{ criterias[loop.index0] }}</th>
+        <td>{{ '%.3f'|format(cell[0]) }}</td>
+        <td>{{ '%.3f'|format(cell[1]) }}</td>
+        <td>{{ '%.3f'|format(cell[2]) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Matrix (fuzzy geometric mean) not available.</p>
+{% endif %}
+
+<div class="paper-title">Table – Fuzzy Weights Triangular</div>
+{% if fuzzy_weights_triangular is defined and fuzzy_weights_triangular %}
+<table class="paper-matrix-gm">
+  <thead>
+    <tr>
+      <th></th><th>l</th><th>m</th><th>u</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cell in fuzzy_weights_triangular %}
+      <tr>
+        <th>{{ criterias[loop.index0] }}</th>
+        <td>{{ '%.3f'|format(cell[0]) }}</td>
+        <td>{{ '%.3f'|format(cell[1]) }}</td>
+        <td>{{ '%.3f'|format(cell[2]) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Matrix Fuzzy Weights not available.</p>
+{% endif %}
+
+<div class="paper-title">Table – Weights Triangular</div>
+{% if weights_triangular is defined and weights_triangular %}
+<table class="paper-matrix-w">
+  <thead><tr><th></th><th>Weights</th></tr></thead>
+  <tbody>
+    {% for w in weights_triangular %}
+      <tr><th>{{ criterias[loop.index0] }}</th><td>{{ '%.3f'|format(w) }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Weights (triangular) not available.</p>
+{% endif %}
+
+<div class="paper-title">Table – Normalized Weights Triangular</div>
+{% if triangular_weights %}
+<table class="paper-matrix-w">
+  <thead><tr><th></th><th>Weights</th></tr></thead>
+  <tbody>
+    {% for c, w in triangular_weights %}
+      <tr><th>{{ c }}</th><td>{{ '%.3f'|format(w) }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Normalized weights not available.</p>
+{% endif %}
+
+<!-- ================= TRAPEZOIDAL ================= -->
+<div class="paper-title">Table – Aggregated judgment matrix trapezoidal</div>
+
+
+{% if new_matrix_fuzzy_trapezoidal is defined and new_matrix_fuzzy_trapezoidal %}
+<table class="paper-matrix">
+  <thead>
+    <tr>
+      <th class="stub-sep"></th>
+      {% for c in criterias %}
+        <th colspan="4" class="group-end">{{ c }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in new_matrix_fuzzy_trapezoidal %}
+      {% set i = loop.index0 %}
+      <tr>
+        <th class="stub-sep">{{ criterias[i] }}</th>
+        {% for cell in row %}
+          <td>{{ '%.3f'|format(cell[0]) }}</td>
+          <td>{{ '%.3f'|format(cell[1]) }}</td>
+          <td>{{ '%.3f'|format(cell[2]) }}</td>
+          <td class="group-end">{{ '%.3f'|format(cell[3]) }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Aggregate matrix (trapezoidal) not available.</p>
+{% endif %}
+
+<div class="paper-title">Table – Fuzzy Geometric Mean Value Trapezoidal</div>
+{% if fuzzy_geometric_mean_trapezoidal is defined and fuzzy_geometric_mean_trapezoidal %}
+<table class="paper-matrix-gm">
+  <thead>
+    <tr>
+      <th></th><th>a</th><th>m</th><th>n</th><th>b</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cell in fuzzy_geometric_mean_trapezoidal %}
+      <tr>
+        <th>{{ criterias[loop.index0] }}</th>
+        <td>{{ '%.3f'|format(cell[0]) }}</td>
+        <td>{{ '%.3f'|format(cell[1]) }}</td>
+        <td>{{ '%.3f'|format(cell[2]) }}</td>
+        <td>{{ '%.3f'|format(cell[3]) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Fuzzy geometric mean (trapezoidal) não disponível.</p>
+{% endif %}
+
+<div class="paper-title">Table – Fuzzy Weights Trapezoidal</div>
+{% if fuzzy_weights_trapezoidal is defined and fuzzy_weights_trapezoidal %}
+<table class="paper-matrix-gm">
+  <thead>
+    <tr>
+      <th></th><th>a</th><th>m</th><th>n</th><th>b</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cell in fuzzy_weights_trapezoidal %}
+      <tr>
+        <th>{{ criterias[loop.index0] }}</th>
+        <td>{{ '%.3f'|format(cell[0]) }}</td>
+        <td>{{ '%.3f'|format(cell[1]) }}</td>
+        <td>{{ '%.3f'|format(cell[2]) }}</td>
+        <td>{{ '%.3f'|format(cell[3]) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Fuzzy weights (trapezoidal) não disponível.</p>
+{% endif %}
+
+<div class="paper-title">Table – Weights Trapezoidal</div>
+{% if weights_trapezoidal is defined and weights_trapezoidal %}
+<table class="paper-matrix-w">
+  <thead><tr><th></th><th>Weights</th></tr></thead>
+  <tbody>
+    {% for w in weights_trapezoidal %}
+      <tr><th>{{ criterias[loop.index0] }}</th><td>{{ '%.3f'|format(w) }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Weights (trapezoidal) não disponível.</p>
+{% endif %}
+
+<div class="paper-title">Table – Normalized Weights Trapezoidal</div>
+{% if trapezoidal_weights %}
+<table class="paper-matrix-w">
+  <thead><tr><th></th><th>Weights</th></tr></thead>
+  <tbody>
+    {% for c, w in trapezoidal_weights %}
+      <tr><th>{{ c }}</th><td>{{ '%.3f'|format(w) }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="source">Source: Elaborated by THOR Web</p>
+{% else %}
+<p>Normalized weights (trapezoidal) não disponível.</p>
+{% endif %}
+
+
+<form action="{{ url_for('fuzzy_ahp_results_submit', id=id) }}" method="POST" class="form-buttons">
+  {% include 'buttons.html' %}
+</form>
+
+</div>
+{% endblock %}

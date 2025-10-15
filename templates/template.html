@@ -1,54 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
   <title>Thor Web</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}"/>
+
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Custom JS -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PK5R43FXQE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <style>
 
-    gtag('config', 'G-PK5R43FXQE');
-  </script>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      padding-top: 70px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+  
+    .navbar-custom {
+      background: linear-gradient(90deg, #0d1b2a, #1b263b, #415a77);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transition: all 0.3s ease-in-out;
+    }
+    .navbar-custom .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #f0f0f0 !important;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .navbar-custom .navbar-brand:hover {
+      transform: translateY(-3px);
+      color: #ffd700 !important;
+    }
+    .navbar-custom .nav-link {
+      color: #e0e0e0 !important;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+    }
+    .navbar-custom .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      left: 0;
+      bottom: -3px;
+      background-color: #ffd700;
+      transition: width 0.3s;
+    }
+    .navbar-custom .nav-link:hover {
+      color: #ffd700 !important;
+    }
+    .navbar-custom .nav-link:hover::after {
+      width: 100%;
+    }
+
+
+    .page-header h1 {
+      color: #0d1b2a;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+    }
+
+
+
+    .container-fluid {
+      padding: 2rem 1rem;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+      transform: none !important;
+    }
+
+  
+    footer {
+      background: #1b263b;
+      color: #e0e0e0;
+      padding: 2rem 0;
+      margin-top: auto;
+      font-size: 0.875rem;
+    }
+    footer img {
+      max-width: 100px;
+      transition: transform 0.3s;
+    }
+    footer img:hover {
+      transform: scale(1.1);
+    }
+
+
+    .table thead {
+      background-color: #415a77;
+      color: #ffffff;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+
+    .btn-primary {
+      background-color: #1b263b;
+      border-color: #1b263b;
+      color: #fff;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover {
+      background-color: #415a77;
+      border-color: #415a77;
+      transform: translateY(-2px) ;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .btn-secondary {
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px) scale(1.03) rotateX(1deg);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+    
+
+  .btn-danger {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .btn-danger:hover {
+    background-color: #e5535d;
+    border-color: #e5535d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  }
+
+  .btn-danger:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+
+  </style>
 
 </head>
 
-<body style="padding-top: 56px;display: flex;flex-direction: column; min-height: 100vh;">
+<body>
 
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="/">THOR method</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <a class="navbar-brand" href="/">THOR Method</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="color: #ffd700;"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="maintenance">Articles</a>
+            <a class="nav-link" href="/maintenance">Articles</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="usecases">Use Cases</a>
+            <a class="nav-link" href="/usecases">Use Cases</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="registerfile">Register</a>
+            <a class="nav-link" href="/registerfile">Register</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="about">About</a>
+            <a class="nav-link" href="/about">About</a>
           </li>
         </ul>
       </div>
@@ -58,42 +197,41 @@
   <!-- Page Content -->
   <div class="container">
     <div class="container container-fluid">
-        <div class="page-header">
-          <h1>{{ title }}</h1>
-        </div>
-          {% block conteudo %}{% endblock %}
-        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+      <div class="page-header">
+        <h1>{{ title }}</h1>
+      </div>
+      {% block conteudo %}{% endblock %}
     </div>
   </div>
-  <!-- /.container -->
 
-  <!-- Footer -->
-  <footer class="py-5 bg-dark" style="flex: 0 0 50px; margin-top: auto;">
-    <div class="container">
-        <!-- Footer Text -->
-      <!--Grid row-->
-      <div class="row">
-        <!--Grid column-->
-        <div class="col-md-3 mb-4" style="display:inline-block;vertical-align:top;">
-          <img src="{{ url_for('static', filename='img/ime-logo.png') }}" class="img-responsive" width="40%" alt="Footer Image" />
-        </div>
-        <div class="col-md-9 mb-4" style="display:inline-block;">
-          <!-- Content -->
-          <p class="m-0 text-center text-white">
-            All rights reserved. The non-commercial (academic) use of this software is free of charge. The only thing that is asked in return is to cite this software when results are used in publications.</p>
-          <p class="m-0 text-center text-white">ALMEIDA, Gilvan Praxedes; TENÓRIO, Fabricio Maione; ARAUJO, Jean de Carvalho; GOMES, Carlos Francisco Simões; SANTOS, Marcos dos. THOR Web software (v.1), 2020.</p>
-        </div>
-        <!--Grid column-->
+<!-- Footer -->
+<footer>
+  <div class="container text-center">
+    <div class="row align-items-center">
+      <div class="col-md-3 mb-2">
+        <a href="https://www.ime.eb.mil.br/" target="_blank" rel="noopener noreferrer"
+           aria-label="Military Engineering Institute — opens in a new tab"
+           class="d-inline-block" title="Military Engineering Institute">
+          <img src="{{ url_for('static', filename='img/ime-logo.png') }}"
+               alt="IME — Military Engineering Institute"
+               loading="lazy" style="vertical-align: middle;">
+        </a>
       </div>
-      <!--Grid row-->
+      <div class="col-md-9 mb-2">
+        <p>All rights reserved. The non-commercial (academic) use of this software is free of charge. 
+          The only thing that is asked in return is to cite this software when results are used in publications.
+        </p>
+        <p>ALMEIDA, Gilvan Praxedes; TENÓRIO, Fabricio Maione; ARAUJO, Jean de Carvalho; GOMES, 
+          Carlos Francisco Simões; SANTOS, Marcos dos; SANTOS, Rhenan Silva dos. 
+          THOR Web software (v.2), 2025.</p>
+      </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <!-- Bootstrap core JavaScript -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 
 </body>
-
 </html>

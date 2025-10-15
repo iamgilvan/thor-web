@@ -1,0 +1,56 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+
+<style>
+
+  .method-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 1.5rem 0;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .method-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    text-decoration: none;
+    color: #fff;
+  }
+
+
+  .method-btn.ahp {
+    background: linear-gradient(45deg, #fc1c04, #530f07);
+  }
+
+  .method-btn.dematel {
+    background: linear-gradient(45deg, #2980b9, #34495e);
+  }
+</style>
+
+<h5 class="text-center mb-3" style="margin-top: 30px;">What assignment method do you want to use?</h5>  
+
+<div class="row justify-content-center" style="margin-top: 20px;">  
+  <div class="col-md-4 mb-4">
+    <a href="{{ url_for('fuzzy_ahp', id=id) }}" class="method-btn ahp">
+      Fuzzy AHP
+    </a>
+  </div>
+  <div class="col-md-4 mb-4">
+    <a href="{{ url_for('fuzzy_dematel', id=id) }}" class="method-btn dematel">
+      Fuzzy DEMATEL
+    </a>
+  </div>
+</div>
+
+{% endblock %}
+

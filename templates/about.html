@@ -1,74 +1,141 @@
-{% extends "template.html" %} {% block conteudo %}
+{% extends "template.html" %}
 
-<p>THOR Web contemplates the use of the THOR and THOR 2 methods, helping to compare the results of the methods and contributing to the application in more complex problems, in which a greater number of criteria and alternatives are used. The  system aims to expand and disseminate the use of methods by the scientific community. The THOR Web system was developed at the Military Engineering Institute (IME) located in Rio de Janeiro, Brazil.</p>
+{% block conteudo %}
+
+<p>THOR Web contemplates the use of the THOR, THOR 2 and Fuzzy THOR 2 methods, helping to compare the results of the methods and contributing to the application in more complex problems, in which a greater number of criteria and alternatives are used. The system aims to expand and disseminate the use of methods by the scientific community. The THOR Web system was developed at the Military Engineering Institute (IME) located in Rio de Janeiro, Brazil.</p>
+
 <p>THOR is a multicriteria decision support system for the ranking of discrete alternatives, which eliminates redundant criteria simultaneously considering if the information is dubious and if there is an increase in imprecision in the decision process. In this way, imprecision is quantified, using it in the multicriteria decision support process.</p>
+
 <p>THOR 2 brings an axiomatic evolution of THOR contemplating the natural evolution of knowledge to be incorporated into the algorithm. These modifications provided a better distribution of the weights in the function of non-transitive aggregation and allowed to fully contemplate the model's uncertainty, since all weights are multiplied by their respective fuzzy-approximate index.</p>
 
+<!-- Developer Cards Container -->
+<div class="dev-flex-container">
 
-<div style="display: flex;">
+  <!-- Fabricio Maione -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/maione.jpg') }}" alt="Fabricio Maione Tenório">
+    <p><strong>Fabricio Maione Tenório (UFF)</strong></p>
+    <p class="text">Fabricio Maione Tenório is a Professor in the Department of Production Engineering at the Federal Center for Technological Education Celso Suckow da Fonseca (CEFET/RJ), Itaguaí campus, Rio de Janeiro, Brazil. He holds a Master’s degree in Systems and Computing from the Military Institute of Engineering (IME) and a Ph.D. in Production Engineering from Fluminense Federal University (UFF). His research interests include Operations Research, Decision Analysis, Problem Structuring Methods, and Computational Modeling.
+      
+    </p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/fabricio-maione-2675488a/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="https://www.researchgate.net/profile/Fabricio-Tenorio"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
+      <a class="link" target="_blank" href="http://lattes.cnpq.br/5443635066574798"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
+    </div>
+  </div>
 
-    <div class="dev-div-img">
-        <img class="dev-img" src="{{ url_for('static', filename='img/maione.jpeg') }}" alt="Fabricio Maione Tenório">
-        <div style="margin-top: 30px">
-            <p><strong>Fabricio Maione Tenório (UFF)</strong></p>
-            <p class="text">Fabricio Maione Tenório is a Professor of Production Engineering in Federal Center of Technological Education Celso Suckow da Fonseca (CEFET/RJ), in Itaguaí, Rio de Janeiro State, Brazil. He received his Master of Sciences degree in Systems and Computing from the Military Engineering Institute (IME), Rio de Janeiro. He is currently a doctoral student in Production Engineering at the Fluminense Federal University, in Niterói, Rio de Janeiro State. His main areas of interest are Operational Research, Decision Analysis, Problem Structured Methods and Computational Modeling.</p>
-        </div>
-        <div style="display: flex;">
-            <a class="link" target="_blank" href="https://www.linkedin.com/in/fabricio-maione-2675488a/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
-            <a class="link" target="_blank" href="https://www.researchgate.net/profile/Fabricio-Tenorio"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
-            <a class="link" target="_blank" href="http://lattes.cnpq.br/5443635066574798"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
-        </div>
+  <!-- Jean de Carvalho -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/jean.jpeg') }}" alt="Jean de Carvalho Araujo">
+    <p><strong>Jean de Carvalho Araujo (CEFET/RJ)</strong></p>
+    <p class="text">Jean de Carvalho Araujo is an industrial intern in Société Générale de Surveillance, in Rio de Janeiro, Brazil. He is a Student of Production Engineering in Federal Center of Technological Education Celso Suckow da Fonseca, in Itaguaí, Rio de Janeiro State, Brazil. His main areas of interest are Multiple Criteria Decision Analysis and Computer Science.</p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/jean-de-carvalho-araujo-6853238b/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="http://lattes.cnpq.br/7245131471938360"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
     </div>
+  </div>
 
-    <div class="dev-div-img">
-        <img style="margin-top: -140px" class="dev-img" src="{{ url_for('static', filename='img/jean.jpeg') }}" alt="Jean de Carvalho Araujo">
-        <div style="margin-top: 30px">
-            <p><strong>Jean de Carvalho Araujo (Cefet)</strong></p>
-            <p class="text">Jean de Carvalho Araujo is an industrial intern in Société Générale de Surveillance, in Rio de Janeiro, Brazil. He is a Student of Production Engineering in Federal Center of Technological Education Celso Suckow da Fonseca, in Itaguaí, Rio de Janeiro State, Brazil. His main areas of interest are Multiple Criteria Decision Analysis and Computer Science.</p>
-        </div>
-        <div style="display: flex;">
-            <a class="link" target="_blank" href="https://www.linkedin.com/in/jean-de-carvalho-araujo-6853238b/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
-            <a class="link" target="_blank" href="http://lattes.cnpq.br/7245131471938360"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
-        </div>
+  <!-- Gilvan Praxedes -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/gilvan.jpg') }}" alt="Gilvan Praxedes de Almeida">
+    <p><strong>Gilvan Praxedes de Almeida (IME)</strong></p>
+    <p class="text">Gilvan Praxedes de Almeida is a Full Stack Developer at Radix Engineering and Software Development, in Rio De Janeiro State, Brazil. He is a Master's student of Sciences degree in Systems and Computing at Military Institute of Engineering - IME, in Rio de Janeiro State, Brazil. His main areas of interest are software development, machine learning, and data science.</p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/gilvan-almeida/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="http://lattes.cnpq.br/2568397365973753"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
     </div>
+  </div>
 
-    <div class="dev-div-img">
-        <img style="margin-top: -140px" class="dev-img" src="{{ url_for('static', filename='img/gilvan.jpg') }}" alt="Gilvan Praxedes de Almeida">
-        <div style="margin-top: 30px">
-        <p><strong>Gilvan Praxedes de Almeida (IME)</strong></p>
-        <p class="text">Gilvan Praxedes de Almeida is a Full Stack Developer at Radix Engineering and Software Development, in Rio De Janeiro State, Brazil. He is a Master's student of Sciences degree in Systems and Computing at Military Institute of Engineering - IME, in Rio de Janeiro State, Brazil. His main areas of interest are software development, machine learning, and data science.</p>
+  <!-- Rhenan Silva -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/rhenan.jpg') }}" alt="Rhenan Silva">
+    <p><strong>Rhenan Silva dos Santos (CEFET/RJ)</strong></p>
+    <p class="text">Rhenan Silva is an undergraduate student of Production Engineering at the Federal Center of Technological Education Celso Suckow da Fonseca (CEFET/RJ), in Itaguaí, Rio de Janeiro State, Brazil. He has experience as an intern in the Quality sector at Michelin, working with process optimization and digital solutions using Power BI, Power Apps and Power Automate. He has also carried out research in Quality and Reliability Engineering, with focus on measurement errors in control charts and studies on accelerated life tests combined with Reinforcement Learning. His main areas of interest are Process Optimization, Data Analysis and Multicriteria Decision Analysis.</p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/rhenan-silva"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="https://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K1110134T9&tokenCaptchar=0cAFcWeA49hQI2MGYlqQH3WaukS1Q8xB-xQn5QGrHsHLT5QgPK130tupKETbYA8e_zoidk1MxrTgyamIr9fm0wFFqxT9rL4yitXSx-ig5KAR36W1aBms5r707axN1duD1vonA1j4SpztsQ0Kv6LwSNLiFAOBVL7VJ3LsuKJYPmIpRLr_h4PfPAQg6IOijC6B6ERRUxuIzOdp5yFIxMESJStNZw_zlTZmLMWGn2XFXL-TKE8c7f4kWKzwiij-RYV0SqXP1kwS2FWbDTQiJX8Ld-WBWLtUoWpLH_477dVtNCfHF8vIR1DMSgZCC1gfW4OR3hRiMBsdDb-43xBmfoOJtfznQsV0dwyXHBJSs6jTT51DCwRTi_P3896O-CkthDc0ibBPV_B6eGoVHp2L0N46ueKabB80z9o4HXxUuJ_ilK2I7GksGMJeteMtCNcMVxDkfZF9ivHMUNUZA9vcgsOki0WvuD_o-xc-kIBWZ-j1k4TXzRuX9Z87SlEPIrg70uecLUQFv0lTxwkRPUyeJoosjQD0a5lX1Zu-rtJ0aCXzWpzVk7vtaq-ZKlDCgFwYcx72sB7rG0Ei7i1TSz5NKUrOfAs89DzaWJNjAiiBC89SlU3Jvy9rciiMDehzbaMj3-Ls0q9Op0uX7A_klN0tTJhHtSS5SeYfrFwpSKuuJleBzAqFUTZHVaK-XJwbQ2hv9iiJO2i7o5zUGhB84238Y88BWXaE3wbHDBlztgUK3zJjQr82zurggTek3xUpAxYMJG-jSv1OpD5zio84Rm1EmJ9mFK2AdBPm_G97W8TKEoWooIb9NNuu-9flA3hxTUN0yyp6QqraaNy_kIStG6DDOQ839SLlq_IWfeIdKa2zhy6eB4PtuJnitVBTh0mwU"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
     </div>
-        <div style="display: flex;">
-            <a class="link" target="_blank" href="https://www.linkedin.com/in/gilvan-almeida/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
-            <a class="link" target="_blank" href="http://lattes.cnpq.br/2568397365973753"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
-        </div>
+  </div>
+
+  <!-- Marcos dos Santos -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/marcos.jpeg') }}" alt="Marcos dos Santos">
+    <p><strong>Marcos dos Santos (IME)</strong></p>
+    <p class="text">Marcos dos Santos is a professor of Advanced Mathematics at the Military Engineering Institute, in Rio de Janeiro, Rio de Janeiro State, Brazil. He received his Doctor of Production Engineering degree in Production Engineering from the Fluminense Federal University. His main areas of interest are Mathematics, Multiple Criteria Decision Analysis and Computer Science.</p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/prof-dr-marcos-santos-45909763/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="https://www.researchgate.net/profile/Marcos_Dos_Santos6"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
+      <a class="link" target="_blank" href="http://lattes.cnpq.br/5534398558592175"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
     </div>
+  </div>
+
+  <!-- Carlos Simões -->
+  <div class="dev-div-img">
+    <img class="dev-img" src="{{ url_for('static', filename='img/simoes.jpeg') }}" alt="Carlos Francisco Simões Gomes">
+    <p><strong>Carlos Francisco Simões Gomes (UFF)</strong></p>
+    <p class="text">Carlos Francisco Simões Gomes is a Professor of Production Engineering in Fluminense Federal University, in Niteroi, Rio de Janeiro State, Brazil. He received his Doctor of Sciences degree in Production Engineering from the Federal University of Rio de Janeiro. His main areas of interest are Multiple Criteria Decision Analysis and Information Technology.</p>
+    <div style="display: flex; justify-content: center;">
+      <a class="link" target="_blank" href="https://www.linkedin.com/in/carlos-francisco-sim%C3%B5es-gomes-7284a3b/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
+      <a class="link" target="_blank" href="https://www.researchgate.net/profile/Carlos-Francisco-Gomes"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
+      <a class="link" target="_blank" href="http://lattes.cnpq.br/7509084995553647"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
+    </div>
+  </div>
+
+
 </div>
-<div style="display: flex; margin-top: 20px">
-    <div class="dev-div-img">
-        <img class="dev-img" src="{{ url_for('static', filename='img/marcos.jpeg') }}" alt="Marcos dos Santos">
-        <div style="margin-top: 30px">
-            <p><strong>Marcos dos Santos (IME)</strong></p>
-            <p class="text">Marcos dos Santos is a professor of Advanced Mathematics at the Military Engineering Institute, in Rio de Janeiro, Rio de Janeiro State, Brazil. He received his Doctor of Production Engineering degree in Production Engineering from the Fluminense Federal University. His main areas of interest are Mathematics, Multiple Criteria Decision Analysis and Computer Science.</p>
-        </div>
-        <div style="display: flex;">
-            <a class="link" target="_blank" href="https://www.linkedin.com/in/prof-dr-marcos-santos-45909763/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
-            <a class="link" target="_blank" href="https://www.researchgate.net/profile/Marcos_Dos_Santos6"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
-            <a class="link" target="_blank" href="http://lattes.cnpq.br/5534398558592175"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
-        </div>
-    </div>
 
-    <div class="dev-div-img">
-        <img style="margin-bottom: 30px;" class="dev-img" src="{{ url_for('static', filename='img/simoes.jpeg') }}" alt="Carlos Francisco Simões Gomes">
-        <div>
-            <p><strong>Carlos Francisco Simões Gomes (UFF)</strong></p>
-            <p class="text">Carlos Francisco Simões Gomes is a Professor of Production Engineering in Fluminense Federal University, in Niteroi, Rio de Janeiro State, Brazil. He received his Doctor of Sciences degree in Production Engineering from the Federal University of Rio de Janeiro. His main areas of interest are Multiple Criteria Decision Analysis and Information Technology.</p>
-        </div>
-        <div style="display: flex;">
-            <a class="link" target="_blank" href="https://www.linkedin.com/in/carlos-francisco-sim%C3%B5es-gomes-7284a3b/"><img class="media" src="{{ url_for('static', filename='img/linkedin.png') }}"></a>
-            <a class="link" target="_blank" href="https://www.researchgate.net/profile/Carlos-Francisco-Gomes"><img class="media" src="{{ url_for('static', filename='img/researchgate.png') }}"></a>
-            <a class="link" target="_blank" href="http://lattes.cnpq.br/7509084995553647"><img class="media" src="{{ url_for('static', filename='img/Lattes.png') }}"></a>
-        </div>
-    </div>
-</div>
+
+<style>
+.dev-flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dev-div-img {
+  flex: 1 1 300px;
+  margin: 10px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.dev-div-img:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.dev-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.link img.media {
+  width: 28px;
+  height: 28px;
+  margin: 5px;
+  transition: transform 0.2s;
+}
+
+.link img.media:hover {
+  transform: scale(1.2);
+}
+</style>
+
 {% endblock %}

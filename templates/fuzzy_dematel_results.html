@@ -1,0 +1,216 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<div class="container py-4">
+  <table class="table table-sm">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col"></th>
+        {% for c in criterias %}<th scope="col" class="text-center">{{ c }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Weight triangular</th>
+        {% for w in peso %}<td class="text-center">{{ '%.3f'|format(w) }}</td>{% endfor %}
+      </tr>
+      {% if pesotrap %}
+      <tr>
+        <th scope="row">Weight trapezoidal</th>
+        {% for w in pesotrap %}<td class="text-center">{{ '%.3f'|format(w) }}</td>{% endfor %}
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <hr class="my-3">
+
+  <h5 class="mb-2">Impact map (Triangular)</h5>
+  <canvas id="triChart" height="220"></canvas>
+
+  {% if pesotrap %}
+  <h5 class="mt-4 mb-2">Impact map (Trapezoidal)</h5>
+  <canvas id="trapChart" height="220"></canvas>
+  {% endif %}
+
+  <hr class="my-3">
+
+  <div class="row">
+    <div class="col-md-6">
+      <h6>Impact of Triangular Criteria</h6>
+      <ul>
+        {% for a,b in dematel_pairs_tri %}
+          <li>{{ criterias[a] }} impacts {{ criterias[b] }}</li>
+        {% else %}
+          <li>No impact between criteria.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h6>Impact of Trapezoidal Criteria</h6>
+      <ul>
+        {% for a,b in dematel_pairs_trap %}
+          <li>{{ criterias[a] }} impacts {{ criterias[b] }}</li>
+        {% else %}
+          <li>No impact between criteria.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <hr class="my-3">
+
+  <div class="row">
+    <div class="col-md-6">
+      <h6>Quadrants (Triangular)</h6>
+      <ul>
+        {% for label, quad in quad_pairs_tri %}
+          <li><strong>{{ label }}:</strong> {{ quad }}</li>
+        {% else %}
+          <li>No data.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h6>Quadrants (Trapezoidal)</h6>
+      <ul>
+        {% for label, quad in quad_pairs_trap %}
+          <li><strong>{{ label }}:</strong> {{ quad }}</li>
+        {% else %}
+          <li>No data.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <form action="{{ url_for('fuzzy_dematel_results_submit', id=id) }}" method="POST" class="form-buttons">
+      {% include 'buttons.html' %}
+    </form>
+  </div>
+</div>
+
+
+<script id="dematel-payload" type="application/json">
+{{ {
+  "labels": criterias,
+  "tri": {
+    "rc": dematel_extras.rc_tri,
+    "rm": dematel_extras.rm_tri,
+    "xC": dematel_extras.x_c_tri,
+    "yC": dematel_extras.y_c_tri
+  },
+  "trap": (pesotrap and {
+    "rc": dematel_extras.rc_trap,
+    "rm": dematel_extras.rm_trap,
+    "xC": dematel_extras.x_c_trap,
+    "yC": dematel_extras.y_c_trap
+  }) or none
+} | tojson | safe }}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function(){
+  // Lê payload JSON gerado pelo Jinja
+  const el = document.getElementById('dematel-payload');
+  let data = {};
+  try { data = JSON.parse(el?.textContent || '{}'); } catch(_) {}
+
+  const labels = data.labels || [];
+
+  const tri = data.tri || {};
+  const rc_tri = tri.rc || [];
+  const rm_tri = tri.rm || [];
+  const xCtri  = tri.xC ?? 0;
+  const yCtri  = tri.yC ?? 0;
+
+  const trap = data.trap || null;
+  const rc_trap = trap?.rc || [];
+  const rm_trap = trap?.rm || [];
+  const xCtrap  = trap?.xC ?? 0;
+  const yCtrap  = trap?.yC ?? 0;
+
+  // Linhas centrais
+  const centerLinePlugin = {
+    id: 'centerLines',
+    afterDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      const opts = chart.options.plugins?.centerLines;
+      if (!x || !y || !opts) return;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x.getPixelForValue(opts.xC), y.top);
+      ctx.lineTo(x.getPixelForValue(opts.xC), y.bottom);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x.left, y.getPixelForValue(opts.yC));
+      ctx.lineTo(x.right, y.getPixelForValue(opts.yC));
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  // Rótulos sobre os pontos
+  const pointLabelPlugin = {
+    id: 'pointLabels',
+    afterDatasetsDraw(chart, _args, pluginOpts) {
+      const { ctx } = chart;
+      const offset = (pluginOpts && pluginOpts.offset) || 6;
+      const font   = (pluginOpts && pluginOpts.font)   || '12px sans-serif';
+      ctx.save();
+      ctx.font = font;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      const datasets = chart.data.datasets || [];
+      datasets.forEach((ds, di) => {
+        const meta = chart.getDatasetMeta(di);
+        (meta.data || []).forEach((elem, i) => {
+          const raw = ds.data?.[i];
+          const label = raw && (raw.label ?? '');
+          if (!label) return;
+          const pos = (typeof elem.tooltipPosition === 'function')
+            ? elem.tooltipPosition()
+            : { x: elem.x, y: elem.y };
+          ctx.fillText(label, pos.x, pos.y - offset);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
+  function makeScatter(canvasId, rc, rm, xC, yC, title) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const pts = (rc || []).map((x, i) => ({ x, y: (rm || [])[i], label: labels[i] }));
+    new Chart(canvas, {
+      type: 'scatter',
+      data: { datasets: [{ label: title, data: pts }] },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => `${c.raw.label}: (r+c=${(+c.raw.x).toFixed(3)}, r−c=${(+c.raw.y).toFixed(3)})`
+            }
+          },
+          centerLines: { xC, yC },
+          pointLabels: { offset: 8, font: '12px sans-serif' }
+        },
+        scales: {
+          x: { title: { display: true} },
+          y: { title: { display: true} }
+        },
+        animation: false,
+        elements: { point: { radius: 4 } },
+      },
+      plugins: [centerLinePlugin, pointLabelPlugin]
+    });
+  }
+
+  makeScatter('triChart', rc_tri, rm_tri, xCtri, yCtri, 'Triangular');
+  if (Array.isArray(rc_trap) && rc_trap.length) {
+    makeScatter('trapChart', rc_trap, rm_trap, xCtrap, yCtrap, 'Trapezoidal');
+  }
+})();
+</script>
+{% endblock %}

@@ -1,26 +1,30 @@
-
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('weight', id=id) }}" method="POST">
-    <div class="form-line">
-        <hr>
-        <h6><b>Alternatives name</b></h6>
-        {% for i in alternatives %}
-            <div class="form-group">
-                <label for="alternative{{ loop.index }}">Alternative {{ loop.index }}:</label>
-                <input type="text" name="alternative{{loop.index}}" class="form-control mx-sm-3" required>
-            </div>
-        {% endfor %}
-        <hr>
-        <h6><b>Criterias name</b></h6>
-        {% for i in criterias %}
-            <div class="form-group">
-                <label for="criteria{{loop.index}}">Criteria {{ loop.index }}:</label>
-                <input type="text" name="criteria{{loop.index}}" class="form-control mx-sm-3" required>
-            </div>
-        {% endfor %}
-    </div>
-    {% include "buttons.html" %}
-  </form>
+<style>
+  .form-line { padding: 1rem; } 
+</style>
 
+<form action="{{ url_for('weight', id=id) }}" method="POST">
+  <div class="form-line p-3">
+    <hr>
+    <h6><b>Alternatives name</b></h6>
+    {% for i in alternatives %}
+      <div class="form-group mb-3">
+        <label for="alternative{{ loop.index }}">Alternative {{ loop.index }}:</label>
+        <input type="text" name="alternative{{loop.index}}" class="form-control" required>
+      </div>
+    {% endfor %}
+
+    <hr class="my-4">
+    <h6><b>Criterias name</b></h6>
+    {% for i in criterias %}
+      <div class="form-group mb-3">
+        <label for="criteria{{loop.index}}">Criteria {{ loop.index }}:</label>
+        <input type="text" name="criteria{{loop.index}}" class="form-control" required>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "buttons.html" %}
+</form>
 {% endblock %}

@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from utils import mongo_utils as mu
 from models.video import *
 import datetime
-
+global config
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
@@ -11,7 +11,7 @@ from views.mcdm import *
 configuration_file = "./input/config.json"
 
 import json
-global config
+
 
 def build_config_params(full_path):
     global config
@@ -32,7 +32,7 @@ def home():
 
 @app.route('/maintenance')
 def maintenance():
-    return render_template('maintenance.html', title='Thor Web')
+    return render_template('maintenance.html', title='Articles')
 
 # Route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])

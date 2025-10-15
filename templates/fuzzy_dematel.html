@@ -1,0 +1,53 @@
+{% extends "template.html" %}
+{% block conteudo %}
+<p>Enter the influence of each criterion over the other for each decision maker.</p>
+
+<form action="{{ url_for('save_fuzzy_dematel', id=id) }}" method="POST">
+  <input type="hidden" name="d_index" value="{{ d_index }}">
+  <h5>Decision Maker {{ d_index }}</h5>
+
+  {% if data_DEMATEL is not defined %}
+    {% set data_DEMATEL = [
+      ["No influence","0"],
+      ["Very Low influence","1"],
+      ["Low influence","2"],
+      ["High influence","3"],
+      ["Very high influence","4"],
+    ] %}
+  {% endif %}
+
+  {% for i in range(criterias|length) %}
+    {% for j in range(criterias|length) %}
+      {% if j != i %}
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            What is the influence of {{ criterias[i] }} over {{ criterias[j] }}?
+          </span>
+        </div>
+        <select
+          name="influence_{{i+1}}_{{j+1}}_{{d_index}}"
+          class="form-control mx-sm-3 w-auto"
+          style="min-width: 240px;" required
+          aria-label="Influence {{ criterias[i] }} → {{ criterias[j] }}">
+          <option value="" disabled selected>Select influence</option>
+          {% for label, val in data_DEMATEL %}
+            <option value="{{ val }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  {% include 'buttons.html' %}
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'danger' else category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+{% endblock %}

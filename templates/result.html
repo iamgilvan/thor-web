@@ -1,218 +1,372 @@
+<!-- File: templates/result.html -->
 {% extends "template.html" %}
 {% block conteudo %}
 
-<a href=../{{file}} target="_blank">Download</a>
-{% if thor.usartca and thor.user_pertinence %}
-    <div>
+{% if thors %}
+  {# ====== DUAS EXECUÇÕES (Triangular / Trapezoidal) ====== #}
+  {% for ctx in thors %}
+    <hr>
+    <h3>{{ ctx.tag }} results</h3>
+    <a href="../{{ ctx.file }}" target="_blank">Download ({{ ctx.tag }})</a>
+
+    {% if ctx.usartca and ctx.user_pertinence and tcans and tcans[loop.index0] %}
+      <div class="mt-2">
         <p>Do you want to use original nebulosa tca?</p>
         <div class="form-check form-check-inline">
-        <input  onclick="javascript:showTca();" class="form-check-input" type="radio" name="tcan" value="0" id="nonebulosa" checked>
-        <label class="form-check-label" for="inlineRadio1">
-          No
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input onclick="javascript:showTca();" class="form-check-input" type="radio" name="tcan" value="1" id="yesnebulosa">
-        <label class="form-check-label" for="inlineRadio2">
-          Yes
-        </label>
-      </div>
-    </div>
+          <input class="form-check-input tcan-toggle"
+                 type="radio"
+                 name="tcan{{loop.index0}}"
+                 value="0"
+                 id="noNeb{{loop.index0}}"
+                 data-target="tcan{{loop.index0}}"
+                 checked>
+          <label class="form-check-label" for="noNeb{{loop.index0}}">No</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input tcan-toggle"
+                 type="radio"
+                 name="tcan{{loop.index0}}"
+                 value="1"
+                 id="yesNeb{{loop.index0}}"
+                 data-target="tcan{{loop.index0}}">
+          <label class="form-check-label" for="yesNeb{{loop.index0}}">Yes</label>
+        </div>
 
-    <div id="tcan" style="display:none" >
-        <p>TCA Nebulosa Original</p>
-        {% for h in tcan.head%}
-            <p>{{h}}</p>
-        {% endfor %}
-        <hr width="30%" size="5">
-        {% for h in tcan.input_rows%}
-            <p>{{h}}</p>
-        {% endfor %}
-        <hr width="30%" size="5">
-        {% for h in tcan.medias%}
-            <p>{{h}}</p>
-        {% endfor %}
-        <hr width="30%" size="5">
-        {% for h in tcan.mediaalt%}
-            <p>{{h}}</p>
-        {% endfor %}
-        <hr width="30%" size="5">
-        {% for h in tcan.mediamedias%}
-            <p>{{h}}</p>
-        {% endfor %}
+        <div id="tcan{{loop.index0}}" style="display:none">
+          <p>TCA Nebulosa Original</p>
+          {% for h in tcans[loop.index0].head %}<p>{{h}}</p>{% endfor %}
+          
+          {% for h in tcans[loop.index0].input_rows %}<p>{{h}}</p>{% endfor %}
+          
+          {% for h in tcans[loop.index0].medias %}<p>{{h}}</p>{% endfor %}
+          
+          {% for h in tcans[loop.index0].mediaalt %}<p>{{h}}</p>{% endfor %}
+          
+          {% for h in tcans[loop.index0].mediamedias %}<p>{{h}}</p>{% endfor %}
 
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+          <!-- Modal trigger -->
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#nebModal{{loop.index0}}">
             See nebulosa results
-        </button>
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="nebModal{{loop.index0}}" tabindex="-1" role="dialog" aria-labelledby="nebTitle{{loop.index0}}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+              <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">TCA nebula result</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <h5 class="modal-title" id="nebTitle{{loop.index0}}">TCA nebula result – {{ ctx.tag }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                  </button>
                 </div>
                 <div class="modal-body">
-                    {% for item in thor.result_tca_n %}
-
-                        {% for s in item.title %}
-                            <h3>{{s}}</h3>
-                        {% endfor %}
-                        <hr width="30%" size="5">
-
-                        {% for s in item.head %}
-                            <p>{{s}}</p>
-                        {% endfor %}
-                        <hr width="30%" size="5">
-
-                        {% for s in item.input_rows %}
-                            <p>{{s}}</p>
-                        {% endfor %}
-                        <hr width="30%" size="5">
-
-                        {% for s in item.medias %}
-                            <p>{{s}}</p>
-                        {% endfor %}
-                        <hr width="30%" size="5">
-
-                        {% for s in item.mediamedias %}
-                            <p>{{s}}</p>
-                        {% endfor %}
-
-                        {% for s in item.mediaalt %}
-                            <p>{{s}}</p>
-                        {% endfor %}
-                    {% endfor %}
-                    <h4>Conclusion</h4>
-                    <p>{{thor.removedTcaN}}</p>
-
-                    <hr width="30%" size="5">
+                  {% for item in ctx.result_tca_n %}
+                    {% for s in item.title %}<h3>{{s}}</h3>{% endfor %}
+                    
+                    {% for s in item.head %}<p>{{s}}</p>{% endfor %}
+                    
+                    {% for s in item.input_rows %}<p>{{s}}</p>{% endfor %}
+                    
+                    {% for s in item.medias %}<p>{{s}}</p>{% endfor %}
+                    
+                    {% for s in item.mediamedias %}<p>{{s}}</p>{% endfor %}
+                    {% for s in item.mediaalt %}<p>{{s}}</p>{% endfor %}
+                  {% endfor %}
+                  <h4>Conclusion</h4>
+                  <p>{{ ctx.removedTcaN }}</p>
+                  
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
+              </div>
             </div>
-            </div>
-        </div>
-    </div>
+          </div>
 
-{% endif %}
-
-{% for result in thor.result %}
-    <div class="card">
-        <div class="card-header">
-            S {{ loop.index }}
         </div>
+      </div>
+    {% endif %}
+
+    {# ---- S1/S2/S3 ---- #}
+    {% for result in ctx.result %}
+      <div class="card mt-3">
+        <div class="card-header">({{ ctx.tag }}) S {{ loop.index }}</div>
         <div class="card-body">
-        <blockquote class="blockquote mb-0">
+          <blockquote class="blockquote mb-0">
             <p>result</p>
-            {% for s in result.S_result %}
-                <p>{{s}}</p>
-            {% endfor %}
+            {% for s in result.S_result %}<p>{{s}}</p>{% endfor %}
             <hr width="30%" size="5">
             <p>Sum</p>
-            {% for somatorio in result.somatorio %}
-                <p>{{somatorio}}</p>
-            {% endfor %}
+            {% for somatorio in result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
             <hr width="30%" size="5">
             <footer>{{ result.original }}</footer>
-        </blockquote>
+          </blockquote>
         </div>
-  </div>
-{% endfor %}
+      </div>
+    {% endfor %}
 
-{% if thor.usartca %}
-<h1>TCA results</h1>
+    {% if ctx.usartca %}
+      <h4 class="mt-4">TCA results ({{ ctx.tag }})</h4>
 
-{% for tca_result in thor.result_tca_s1 %}
-    <div class="card">
-        <div class="card-header">
+      {% for tca_result in ctx.result_tca_s1 %}
+        <div class="card mt-2">
+          <div class="card-header">
             <p>{{ tca_result.title }}</p>
             <p>{{ tca_result.sub_title }}</p>
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p>result</p>
+              {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <p>Sum</p>
+              {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <footer>{{ tca_result.original }}</footer>
+              <footer>{{ tca_result.original2 }}</footer>
+              <footer>{{ ctx.tca_s1_citerio_removed }}</footer>
+            </blockquote>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% for tca_result in ctx.result_tca_s2 %}
+        <div class="card mt-2">
+          <div class="card-header">
+            <p>{{ tca_result.title }}</p>
+            <p>{{ tca_result.sub_title }}</p>
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p>result</p>
+              {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <p>Sum</p>
+              {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <footer>{{ tca_result.original }}</footer>
+              <footer>{{ tca_result.original2 }}</footer>
+              <footer>{{ ctx.tca_s2_citerio_removed }}</footer>
+            </blockquote>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% for tca_result in ctx.result_tca_s3 %}
+        <div class="card mt-2">
+          <div class="card-header">
+            <p>{{ tca_result.title }}</p>
+            <p>{{ tca_result.sub_title }}</p>
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p>result</p>
+              {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <p>Sum</p>
+              {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
+              <hr width="30%" size="5">
+              <footer>{{ tca_result.original }}</footer>
+              <footer>{{ tca_result.original2 }}</footer>
+              <footer>{{ ctx.tca_s3_citerio_removed }}</footer>
+            </blockquote>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+
+{% else %}
+  {# ====== UMA EXECUÇÃO (comportamento antigo) ====== #}
+  <a href="../{{file}}" target="_blank">Download</a>
+
+  {% if thor.usartca and thor.user_pertinence %}
+    <div>
+      <p>Do you want to use original nebulosa tca?</p>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input tcan-toggle"
+               type="radio"
+               name="tcan-single"
+               value="0"
+               id="nonebulosa"
+               data-target="tcan"
+               checked>
+        <label class="form-check-label" for="nonebulosa">No</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input tcan-toggle"
+               type="radio"
+               name="tcan-single"
+               value="1"
+               id="yesnebulosa"
+               data-target="tcan">
+        <label class="form-check-label" for="yesnebulosa">Yes</label>
+      </div>
+    </div>
+
+    <div id="tcan" style="display:none">
+      <p>TCA Nebulosa Original</p>
+      {% for h in tcan.head %}<p>{{h}}</p>{% endfor %}
+      <hr width="30%" size="5">
+      {% for h in tcan.input_rows %}<p>{{h}}</p>{% endfor %}
+      <hr width="30%" size="5">
+      {% for h in tcan.medias %}<p>{{h}}</p>{% endfor %}
+      <hr width="30%" size="5">
+      {% for h in tcan.mediaalt %}<p>{{h}}</p>{% endfor %}
+      <hr width="30%" size="5">
+      {% for h in tcan.mediamedias %}<p>{{h}}</p>{% endfor %}
+
+      <!-- Modal -->
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">See nebulosa results</button>
+      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">TCA nebula result</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+              {% for item in thor.result_tca_n %}
+                {% for s in item.title %}<h3>{{s}}</h3>{% endfor %}
+                <hr width="30%" size="5">
+                {% for s in item.head %}<p>{{s}}</p>{% endfor %}
+                <hr width="30%" size="5">
+                {% for s in item.input_rows %}<p>{{s}}</p>{% endfor %}
+                <hr width="30%" size="5">
+                {% for s in item.medias %}<p>{{s}}</p>{% endfor %}
+                <hr width="30%" size="5">
+                {% for s in item.mediamedias %}<p>{{s}}</p>{% endfor %}
+                {% for s in item.mediaalt %}<p>{{s}}</p>{% endfor %}
+              {% endfor %}
+              <h4>Conclusion</h4>
+              <p>{{thor.removedTcaN}}</p>
+              <hr width="30%" size="5">
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% for result in thor.result %}
+    <div class="card">
+      <div class="card-header">S {{ loop.index }}</div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>result</p>
+          {% for s in result.S_result %}<p>{{s}}</p>{% endfor %}
+          <hr width="30%" size="5">
+          <p>Sum</p>
+          {% for somatorio in result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
+          <hr width="30%" size="5">
+          <footer>{{ result.original }}</footer>
+        </blockquote>
+      </div>
+    </div>
+  {% endfor %}
+
+  {% if thor.usartca %}
+    <h1>TCA results</h1>
+    {% for tca_result in thor.result_tca_s1 %}
+      <div class="card">
+        <div class="card-header">
+          <p>{{ tca_result.title }}</p>
+          <p>{{ tca_result.sub_title }}</p>
         </div>
         <div class="card-body">
-        <blockquote class="blockquote mb-0">
+          <blockquote class="blockquote mb-0">
             <p>result</p>
-            {% for s in tca_result.S_result %}
-                <p>{{s}}</p>
-            {% endfor %}
+            {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
             <hr width="30%" size="5">
             <p>Sum</p>
-            {% for somatorio in tca_result.somatorio %}
-                <p>{{somatorio}}</p>
-            {% endfor %}
+            {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
             <hr width="30%" size="5">
             <footer>{{ tca_result.original }}</footer>
             <footer>{{ tca_result.original2 }}</footer>
             <footer>{{ thor.tca_s1_citerio_removed }}</footer>
-        </blockquote>
+          </blockquote>
         </div>
-  </div>
-{% endfor %}
+      </div>
+    {% endfor %}
 
-
-
-
-
-{% for tca_result in thor.result_tca_s2 %}
-    <div class="card">
+    {% for tca_result in thor.result_tca_s2 %}
+      <div class="card">
         <div class="card-header">
-            <p>{{ tca_result.title }}</p>
-            <p>{{ tca_result.sub_title }}</p>
+          <p>{{ tca_result.title }}</p>
+          <p>{{ tca_result.sub_title }}</p>
         </div>
         <div class="card-body">
-        <blockquote class="blockquote mb-0">
+          <blockquote class="blockquote mb-0">
             <p>result</p>
-            {% for s in tca_result.S_result %}
-                <p>{{s}}</p>
-            {% endfor %}
+            {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
             <hr width="30%" size="5">
             <p>Sum</p>
-            {% for somatorio in tca_result.somatorio %}
-                <p>{{somatorio}}</p>
-            {% endfor %}
+            {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
             <hr width="30%" size="5">
             <footer>{{ tca_result.original }}</footer>
             <footer>{{ tca_result.original2 }}</footer>
             <footer>{{ thor.tca_s2_citerio_removed }}</footer>
-        </blockquote>
+          </blockquote>
         </div>
-  </div>
-{% endfor %}
+      </div>
+    {% endfor %}
 
-
-
-{% for tca_result in thor.result_tca_s3 %}
-    <div class="card">
+    {% for tca_result in thor.result_tca_s3 %}
+      <div class="card">
         <div class="card-header">
-            <p>{{ tca_result.title }}</p>
-            <p>{{ tca_result.sub_title }}</p>
+          <p>{{ tca_result.title }}</p>
+          <p>{{ tca_result.sub_title }}</p>
         </div>
         <div class="card-body">
-        <blockquote class="blockquote mb-0">
+          <blockquote class="blockquote mb-0">
             <p>result</p>
-            {% for s in tca_result.S_result %}
-                <p>{{s}}</p>
-            {% endfor %}
+            {% for s in tca_result.S_result %}<p>{{s}}</p>{% endfor %}
             <hr width="30%" size="5">
             <p>Sum</p>
-            {% for somatorio in tca_result.somatorio %}
-                <p>{{somatorio}}</p>
-            {% endfor %}
+            {% for somatorio in tca_result.somatorio %}<p>{{somatorio}}</p>{% endfor %}
             <hr width="30%" size="5">
             <footer>{{ tca_result.original }}</footer>
             <footer>{{ tca_result.original2 }}</footer>
             <footer>{{ thor.tca_s3_citerio_removed }}</footer>
-        </blockquote>
+          </blockquote>
         </div>
-  </div>
-{% endfor %}
+      </div>
+    {% endfor %}
+  {% endif %}
 {% endif %}
-<button class="btn btn-danger btn-lg active"  onclick="goBack()">Go back</button>
-<a href= "/" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Home</a>
 
+<button class="btn btn-danger btn-lg active" onclick="history.back()">Go back</button>
+<a href="/" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Home</a>
+
+<script>
+
+(function(){
+  function updateGroup(targetId, groupName) {
+    const box = document.getElementById(targetId);
+    if (!box) return;
+    const yesChecked = Array.from(document.querySelectorAll(`input[name="${groupName}"]`))
+      .some(r => r.checked && r.value === "1");
+    box.style.display = yesChecked ? 'block' : 'none';
+  }
+
+  document.addEventListener('change', (e) => {
+    const el = e.target;
+    if (!el.classList || !el.classList.contains('tcan-toggle')) return;
+    const target = el.getAttribute('data-target');
+    const group  = el.getAttribute('name');
+    if (target && group) updateGroup(target, group);
+  });
+
+  // Estado inicial
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tcan-toggle').forEach((el) => {
+      const target = el.getAttribute('data-target');
+      const group  = el.getAttribute('name');
+      if (target && group) updateGroup(target, group);
+    });
+  });
+})();
+</script>
 
 {% endblock %}

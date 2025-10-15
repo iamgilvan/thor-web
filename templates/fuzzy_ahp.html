@@ -1,0 +1,230 @@
+<!-- file: templates/fuzzy_ahp.html -->
+{% extends "template.html" %}
+
+{% block conteudo %}
+<p>Enter with your preferences ​​for each criterion comparison for each decision maker.</p>
+
+<form id="fuzzyForm" action="{{ url_for('save_fuzzy_ahp', id=id) }}" method="POST" data-api-url="{{ url_for('api_check_fuzzy_ahp', id=id) }}">
+  <input type="hidden" name="d_index" value="{{ d_index }}">
+  <h5>Decision Maker {{ d_index }}</h5>
+
+  {% if data_AHP is not defined %}
+    {% set data_AHP = [
+      ["Extremely Weak","0.111"],
+      ["Very Weak / Extremely Weak","0.125"],
+      ["Very Weak","0.143"],
+      ["Weak / Very Weak","0.167"],
+      ["Weak","0.200"],
+      ["Moderate Weak / Weak","0.250"],
+      ["Moderate Weak","0.333"],
+      ["Equal / Moderate Weak","0.500"],
+      ["Equal","1.00"],
+      ["Equal / Moderate Strong","2.00"],
+      ["Moderate Strong","3.00"],
+      ["Moderate Strong / Strong","4.00"],
+      ["Strong","5.00"],
+      ["Strong / Very Strong","6.00"],
+      ["Very Strong","7.00"],
+      ["Very Strong / Extremely Strong","8.00"],
+      ["Extremely Strong","9.00"]
+    ] %}
+  {% endif %}
+
+  {% for i in range(criterias|length) %}
+    {% for j in range(criterias|length) %}
+      {% if j > i %}
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            What is the criterion preference {{ criterias[i] }} about the criterion {{ criterias[j] }}?
+          </span>
+        </div>
+
+        <select
+          name="preference_{{i+1}}_{{j+1}}_{{d_index}}"
+          class="form-control mx-sm-3 w-auto"
+          style="min-width: 220px;"
+          required
+          aria-label="Preference {{ criterias[i] }} vs {{ criterias[j] }}">
+          <option value="" disabled selected>Select preference</option>
+          {% for label, sval in data_AHP %}
+            <option value="{{ sval }}" title="{{ sval }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+
+  <div class="card mt-4 mb-4" id="consistencyCard" aria-live="polite">
+    <div class="card-body">
+      <h6 class="card-title mb-2">Consistency (quick check)</h6>
+      <div id="consistencyStatus" class="small text-muted">
+        Fill in all comparisons to calculate.
+      </div>
+      <div id="consistencyNumbers" class="mt-2" style="display:none;">
+        <div>CR Triangular: <strong id="crTri">—</strong></div>
+        <div>CR Trapezoidal: <strong id="crTrap">—</strong></div>
+        <div class="small mt-1" id="consistencyHint"></div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'buttons.html' %}
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-danger mt-3">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<script>
+  (function() {
+    const form = document.getElementById('fuzzyForm');
+    const apiUrl = form.getAttribute('data-api-url');
+    const selects = Array.from(form.querySelectorAll('select[name^="preference_"]'));
+
+    const statusEl = document.getElementById('consistencyStatus');
+    const numbersEl = document.getElementById('consistencyNumbers');
+    const crTriEl = document.getElementById('crTri');
+    const crTrapEl = document.getElementById('crTrap');
+    const hintEl = document.getElementById('consistencyHint');
+    const cardEl = document.getElementById('consistencyCard');
+
+    const submitBtn = (function findSubmit() {
+      return form.querySelector('button[type="submit"], input[type="submit"]');
+    })();
+
+    function setSubmitEnabled(enabled) {
+      if (submitBtn) {
+        submitBtn.disabled = !enabled;
+        submitBtn.title = enabled ? '' : 'Fill and get consistency ≤ 0.10 to submit';
+      }
+    }
+    setSubmitEnabled(false);
+
+    form.addEventListener('submit', function(e) {
+      if (submitBtn && submitBtn.disabled) e.preventDefault();
+    });
+
+    function allFilled() {
+      return selects.every(s => s.value && s.value.trim() !== '');
+    }
+
+    function setCalculating() {
+      numbersEl.style.display = 'none';
+      statusEl.className = 'small text-muted';
+      statusEl.textContent = 'Calculating consistency…';
+      hintEl.textContent = '';
+    }
+
+    function showMissing() {
+      numbersEl.style.display = 'none';
+      statusEl.className = 'small text-muted';
+      statusEl.textContent = 'Fill in all comparisons to calculate.';
+      hintEl.textContent = '';
+      setSubmitEnabled(false);
+    }
+
+    function showResult(cr, crTrap, consistent) {
+      numbersEl.style.display = '';
+      crTriEl.textContent = cr.toFixed(3);
+      crTrapEl.textContent = crTrap.toFixed(3);
+
+      if (consistent) {
+        statusEl.className = 'small text-success';
+        statusEl.textContent = 'Consistent ✓';
+        hintEl.className = 'small text-success';
+        hintEl.textContent = 'You can submit the form.';
+        setSubmitEnabled(true);
+      } else {
+        statusEl.className = 'small text-danger';
+        statusEl.textContent = 'Inconsistent ✗';
+        hintEl.className = 'small text-danger';
+        hintEl.textContent = 'Revise your judgments until both CR ≤ 0.10.';
+        setSubmitEnabled(false);
+      }
+    }
+
+    function showError(msg) {
+      numbersEl.style.display = 'none';
+      statusEl.className = 'small text-danger';
+      statusEl.textContent = 'Error calculating: ' + (msg || 'try again');
+      hintEl.textContent = '';
+      setSubmitEnabled(false);
+    }
+
+    function debounce(fn, wait) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    
+    function alignConsistencyCard() {
+      if (!cardEl || selects.length === 0) return;
+
+      
+      let right = -Infinity;
+      for (const s of selects) {
+        const r = s.getBoundingClientRect();
+        if (r.right > right) right = r.right;
+      }
+      if (!isFinite(right)) return;
+
+      const cardRect = cardEl.getBoundingClientRect();
+      const width = Math.max(0, right - cardRect.left);
+
+      
+      cardEl.style.marginLeft = '';  
+      cardEl.style.width = width + 'px';
+      cardEl.style.maxWidth = '100%'; 
+    }
+
+    async function checkConsistency() {
+      alignConsistencyCard();
+
+      if (!allFilled()) {
+        showMissing();
+        return;
+      }
+      setCalculating();
+
+      try {
+        const fd = new FormData(form);
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          body: fd,
+          headers: { 'X-Requested-With': 'fetch' }
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          if (data.allFilled === false) {
+            showMissing();
+          } else {
+            showError(data.message || 'invalid response');
+          }
+          return;
+        }
+        const cr = Number(data.cr);
+        const crTrap = Number(data.cr_trapezoidal);
+        const consistent = Boolean(data.consistent);
+        showResult(cr, crTrap, consistent);
+      } catch (err) {
+        showError(err && err.message);
+      }
+    }
+
+    const onChange = debounce(checkConsistency, 400);
+    selects.forEach(s => s.addEventListener('change', onChange));
+    window.addEventListener('load', () => { alignConsistencyCard(); });
+    window.addEventListener('resize', debounce(alignConsistencyCard, 150));
+  })();
+</script>
+{% endblock %}
